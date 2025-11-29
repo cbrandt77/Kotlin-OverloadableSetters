@@ -20,6 +20,34 @@ Strategy:
 
 There's no way to get all extension properties and methods for a class because that's resolved via import, so maybe don't even do name verification and just have it link to an arbitrary `set-bar` that could be imported if need-be
 
+Ok genuinely: should we require setter methods to be annotated? 
+Reasons to:
+- It'll let us lint the declaration without requiring that the name be right first
+- It'll stop linting on things that aren't intended to be setters.
+- Overloaded setters are infrequent enough that it won't be intrusive
+Reasons not to:
+- We don't know the type during the invocation, so we're still setting it blindly either way
+- It adds more moving parts
+- If we aren't doing lookups each time, it might make people think their setter is fine if they shadow the original property setter
 
-Diagnostics:
-- thing
+# Diagnostics:
+## Function Declaration
+### Acts on:
+- Functions that match the setter name scheme
+
+### Errors:
+- Its parameter is the same as the original property's setter 
+
+### Warnings: 
+(should they be warnings? or should they be errors? I don't want to bind the entire codebase to my schema. I think it should just be unresolvable on the callsite-end if it doesn't match the schema.)
+- The name doesn't reference a real property (should be suppressable)
+  - This is fine actually. If it's an in-class method, it would be weird to reference an inaccessible extension property.
+  - Still, we should use scope lookup instead of class-member lookup just to be sure.
+- The name doesn't reference an _annotated_ property
+- It doesn't have exactly one parameter
+- It has context or type parameters
+- It doesn't return Unit
+
+
+## Callsite
+- 

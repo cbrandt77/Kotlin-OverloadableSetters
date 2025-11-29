@@ -1,0 +1,14 @@
+[versions]
+kotlin = "2.2.20"
+build-config = "5.6.5"
+bcv = "0.16.3"
+junit = "4.13.2"
+
+[libraries]
+junit = { module = "junit:junit", version.ref = "junit" }
+
+[plugins]
+kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
+kotlin-multiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }
+build-config = { id = "com.github.gmazzo.buildconfig", version.ref = "build-config" }
+binary-compatibility-validator = { id = "org.jetbrains.kotlinx.binary-compatibility-validator", version.ref = "bcv" }

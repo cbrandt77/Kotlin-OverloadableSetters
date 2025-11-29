@@ -1,0 +1,38 @@
+FILE: extensionMethod.kt
+    public final annotation class HasCustomSetters : R|kotlin/Annotation| {
+        public constructor(): R|HasCustomSetters| {
+            super<R|kotlin/Any|>()
+        }
+
+    }
+    public final class MyClass : R|kotlin/Any| {
+        public constructor(): R|MyClass| {
+            super<R|kotlin/Any|>()
+        }
+
+        @R|HasCustomSetters|() public final var bar: R|kotlin/String| = String(MADBAGIC)
+            public get(): R|kotlin/String|
+            public set(value: R|kotlin/String|): R|kotlin/Unit|
+
+        @R|kotlin/jvm/JvmName|(name = String($$OverloadedSetters$setBar)) public final fun setBar(<set-?>: R|kotlin/String|): R|kotlin/Unit| {
+            this@R|/MyClass|.R|/MyClass.bar| = R|<local>/<set-?>|
+        }
+
+    }
+    public final fun R|MyClass|.setBar(value: R|kotlin/Int|): R|kotlin/Unit| {
+        this@R|/setBar|.R|/MyClass.setBar|(R|<local>/value|.R|kotlin/Int.toString|())
+    }
+    public final fun box(): R|kotlin/String| {
+        lval inst: R|MyClass| = R|/MyClass.MyClass|()
+        R|<local>/inst|.R|/setBar|(Int(0))
+        lval result: R|kotlin/String| = R|<local>/inst|.R|/MyClass.bar|
+        ^box when () {
+            ==(R|<local>/result|, String(0)) ->  {
+                String(OK)
+            }
+            else ->  {
+                <strcat>(String(Fail: ), R|<local>/result|)
+            }
+        }
+
+    }

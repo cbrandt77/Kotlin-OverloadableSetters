@@ -1,0 +1,3 @@
+public abstract interface annotation class cb77/tools/lang/overloadablesetters/HasCustomSetters : java/lang/annotation/Annotation {
+}
+

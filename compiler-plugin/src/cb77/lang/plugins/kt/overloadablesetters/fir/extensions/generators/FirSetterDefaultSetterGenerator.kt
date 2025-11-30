@@ -17,6 +17,7 @@ import org.jetbrains.kotlin.fir.declarations.FirResolvePhase
 import org.jetbrains.kotlin.fir.declarations.FirSimpleFunction
 import org.jetbrains.kotlin.fir.declarations.builder.buildSimpleFunction
 import org.jetbrains.kotlin.fir.declarations.builder.buildValueParameter
+import org.jetbrains.kotlin.fir.declarations.declaredProperties
 import org.jetbrains.kotlin.fir.declarations.impl.FirResolvedDeclarationStatusImpl
 import org.jetbrains.kotlin.fir.declarations.origin
 import org.jetbrains.kotlin.fir.declarations.utils.canNarrowDownGetterType
@@ -55,7 +56,7 @@ import org.jetbrains.kotlin.utils.mapToSetOrEmpty
  * Adds a `set-{propName}` function with the property's original type to the class,
  * so we can blindly remap `foo.bar = baz` to `foo.set-bar(baz)`
  */
-class DefaultSetterMaker(session: FirSession) : FirDeclarationGenerationExtension(session) {
+class FirSetterDefaultSetterGenerator(session: FirSession) : FirDeclarationGenerationExtension(session) {
 	
 	object OverloadableSettersDeclarationKey : GeneratedDeclarationKey()
 	
@@ -76,14 +77,14 @@ class DefaultSetterMaker(session: FirSession) : FirDeclarationGenerationExtensio
 	private val annotatedPropertiesByClass: FirCache<FirClassSymbol<*>, Map<Name, FirPropertySymbol>, Nothing?> = session.firCachesFactory.createCache { owningClass, _ ->
 		calledFromCache.set(true)
 		
-		owningClass.getDeclaredAndInheritedCallables(session, FirResolvePhase.SUPER_TYPES)
-			.filterIsInstance<FirPropertySymbol>()
+		// Only take the properties declared inside this class, not a full scope search. Any supertypes should autogenrate their _own_ `set-bar` functions.
+		val ret = owningClass.declaredProperties(session)
 			.filter { it.supportsCustomSetters(session) }
 			.associateBy { Name.identifier(makeSetterName(it)) }
-			
-			.also {
-				calledFromCache.set(false)
-			}
+		
+		calledFromCache.set(false)
+		
+		return@createCache ret
 	}
 	
 	/**
@@ -152,21 +153,21 @@ class DefaultSetterMaker(session: FirSession) : FirDeclarationGenerationExtensio
 							mapping[StandardClassIds.Annotations.ParameterNames.parameterNameName] = buildLiteralExpression(ourSource, ConstantValueKind.String, getJvmNameForSetter(setterName.asString()), setType=true)
 						}
 					},
-					// Deprecated(HIDDEN) TODO figure out how to hide the declaration from IDE autocomplete
-					buildAnnotation {
-						source = ourSource
-						annotationTypeRef = buildResolvedTypeRef {
-							source = ourSource
-							coneType = StandardClassIds.Annotations.Deprecated.constructClassLikeType()
-						}
-						argumentMapping = buildAnnotationArgumentMapping {
-							mapping[StandardClassIds.Annotations.ParameterNames.deprecatedMessage] = buildLiteralExpression(ourSource, ConstantValueKind.String, "Use actual property setter", setType=true)
-							mapping[StandardClassIds.Annotations.ParameterNames.deprecatedLevel] = buildEnumEntryDeserializedAccessExpression {
-								enumClassId = StandardClassIds.DeprecationLevel
-								enumEntryName = Name.identifier(DeprecationLevelValue.HIDDEN.name)
-							}
-						}
-					}
+//					// Deprecated(HIDDEN) TODO figure out how to hide the declaration from IDE autocomplete
+//					buildAnnotation {
+//						source = ourSource
+//						annotationTypeRef = buildResolvedTypeRef {
+//							source = ourSource
+//							coneType = StandardClassIds.Annotations.Deprecated.constructClassLikeType()
+//						}
+//						argumentMapping = buildAnnotationArgumentMapping {
+//							mapping[StandardClassIds.Annotations.ParameterNames.deprecatedMessage] = buildLiteralExpression(ourSource, ConstantValueKind.String, "Use actual property setter", setType=true)
+//							mapping[StandardClassIds.Annotations.ParameterNames.deprecatedLevel] = buildEnumEntryDeserializedAccessExpression {
+//								enumClassId = StandardClassIds.DeprecationLevel
+//								enumEntryName = Name.identifier(DeprecationLevelValue.HIDDEN.name)
+//							}
+//						}
+//					}
 			)
 			
 			val parameter = buildValueParameter {

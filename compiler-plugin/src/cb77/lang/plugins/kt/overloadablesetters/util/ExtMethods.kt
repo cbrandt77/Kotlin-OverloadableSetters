@@ -19,20 +19,6 @@ import org.jetbrains.kotlin.fir.symbols.impl.FirPropertySymbol
 import org.jetbrains.kotlin.fir.symbols.impl.FirRegularClassSymbol
 import org.jetbrains.kotlin.name.Name
 
-fun String.capitalize() = replaceFirstChar { if (it.isLowerCase()) it.uppercaseChar() else it }
-fun String.uncapitalize() = replaceFirstChar { if (it.isUpperCase()) it.lowercaseChar() else it }
-
-/**
- * If a letter: if uppercase, returns lowercase version, and vice-versa.
- * If not a letter: returns self
- */
-fun Char.swapCase(): Char {
-	return when {
-		!isLetter() -> this
-		isLowerCase() -> this.uppercaseChar()
-		else -> this.lowercaseChar()
-	}
-}
 
 fun FirPropertySymbol.supportsCustomSetters(session: FirSession): Boolean {
 	return session.setterOverloadFinderService.propertySupportsOverloadedSetters(this)

@@ -30,15 +30,6 @@ object FirOverloadedSetterDefaultMessages : BaseDiagnosticRendererFactory() {
 				FirOverloadedSetterErrors.SETTER_ANNOTATED_PROP_NOT_MUTABLE,
 				"''@HasCustomSetters'' can only be applied to mutable properties.",
 			)
-			
-//			put(
-//					FirOverloadedSetterErrors,
-//					"No function matching ''set-{0}({1}): Unit'' found." +
-//					"Available setter types: {2}",
-//					STRING,
-//					RENDER_TYPE,
-//					RENDER_COLLECTION_OF_TYPES
-//			)
 		}
 	}
 	

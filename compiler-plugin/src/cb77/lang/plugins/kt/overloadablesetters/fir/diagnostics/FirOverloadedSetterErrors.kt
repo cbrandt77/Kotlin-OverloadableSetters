@@ -60,18 +60,14 @@ object FirOverloadedSetterErrors : KtDiagnosticsContainer() {
 	 * For a setter function `MyClass#set-bar`, `set-bar` has wider visibility than `bar`.
 	 *
 	 * This is an issue because the visibility system is baked into the IDEs' autocomplete systems,
-	 * so referencing invisible properties will make them freak out.
+	 * so referencing otherwise-invisible properties will make them freak out.
 	 *
 	 * Note that a similar thing of referencing a private setter _should_ be allowed, because that's an intended use-case.
 	 * But also if the setter isn't accessible to the caller, that's a different IDE lint.
 	 * (Of course, I don't know how well the IDE will react to trying to "invoke" a private setter, but we'll see when we get there.) TODO
-	 *
-	 * @param _1 The target property
-	 * @param _2 The target property's visibility
-	 * @param _3 The setter function's visibility
 	 */
-	@Suppress("KDocUnresolvedReference")
-	val SETTER_DECL_CANNOT_WIDEN_VISIBILITY by error3<KtNamedFunction, FirPropertySymbol, Visibility, Visibility>(SourceElementPositioningStrategies.DECLARATION_NAME)
+	@Deprecated("Only here for documenting the error", replaceWith = ReplaceWith("FirErrors.CANNOT_WEAKEN_ACCESS_PRIVILEGE", "org.jetbrains.kotlin.fir.analysis.diagnostics.FirErrors.CANNOT_WEAKEN_ACCESS_PRIVILEGE"))
+	val SETTER_DECL_CANNOT_WIDEN_VISIBILITY: Nothing? = null
 	
 	
 	/**

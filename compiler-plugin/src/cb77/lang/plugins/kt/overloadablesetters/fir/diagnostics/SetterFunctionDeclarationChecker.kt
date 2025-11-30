@@ -15,6 +15,7 @@ import org.jetbrains.kotlin.fir.analysis.checkers.declaration.FirFunctionChecker
 import org.jetbrains.kotlin.fir.analysis.checkers.findClosestClassOrObject
 import org.jetbrains.kotlin.fir.analysis.checkers.hasModifier
 import org.jetbrains.kotlin.fir.analysis.checkers.isVisibleInClass
+import org.jetbrains.kotlin.fir.analysis.diagnostics.FirErrors
 import org.jetbrains.kotlin.fir.declarations.FirDeclarationOrigin
 import org.jetbrains.kotlin.fir.declarations.FirFunction
 import org.jetbrains.kotlin.fir.declarations.declaredProperties
@@ -70,8 +71,9 @@ object SetterFunctionDeclarationChecker : FirFunctionChecker(MppCheckerKind.Comm
 		if (!referencedProperty.isVisibleFrom(declaration.symbol)) {
 			reporter.reportOn(declaration.source, FirOverloadedSetterErrors.SETTER_DECL_TARGET_PROPERTY_NOT_VISIBLE, referencedProperty)
 		}
-		else if (declaration.visibility > referencedProperty.visibility){
-			reporter.reportOn(declaration.source, FirOverloadedSetterErrors.SETTER_DECL_CANNOT_WIDEN_VISIBILITY, referencedProperty, referencedProperty.visibility, declaration.visibility)
+		else if (declaration.visibility > referencedProperty.visibility) {
+			/** @see FirOverloadedSetterErrors.SETTER_DECL_CANNOT_WIDEN_VISIBILITY*/
+			reporter.reportOn(declaration.source, FirErrors.CANNOT_WEAKEN_ACCESS_PRIVILEGE, referencedProperty.visibility, referencedProperty, owningClass.name)
 		}
 		
 		// PARAMETERS:

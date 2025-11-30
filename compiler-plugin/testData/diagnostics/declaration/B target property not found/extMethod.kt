@@ -1,22 +1,23 @@
-// RUN_PIPELINE_TILL: FRONTEND
+// RUN_PIPELINE_TILL: BACKEND
 
 // MODULE: lib
 // FILE: HasCustomSetters.kt
 package annotations;
+
 annotation class HasCustomSetters
 
-// FILE: foo.kt
+// FILE: MyClass.kt
 package foo;
 
 import annotations.HasCustomSetters
 
 class MyClass {
+	@HasCustomSetters
 	var someProperty: String = ""
-	
-	@Suppress("SETTER_DECL_TARGET_PROPERTY_UNSUPPORTED")
-	fun `set-someProperty`(value: Int) {
-		someProperty = value.toString()
-	}
+}
+
+fun MyClass.<!SETTER_DECL_TARGET_PROPERTY_NOT_FOUND!>`set-nonexistentProperty`<!>(value: Int) {
+	someProperty = value.toString()
 }
 
 
@@ -30,4 +31,5 @@ fun test() {
 	val x = MyClass()
 	x.someProperty = "a string"
 	x.someProperty = <!ASSIGNMENT_TYPE_MISMATCH!>2<!>
+	x.<!UNRESOLVED_REFERENCE!>nonexistentProperty<!> = 2
 }

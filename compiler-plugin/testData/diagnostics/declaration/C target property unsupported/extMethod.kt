@@ -5,20 +5,22 @@
 package annotations;
 annotation class HasCustomSetters
 
-// FILE: foo.kt
+// FILE: MyClass.kt
 package foo;
 
 import annotations.HasCustomSetters
 
 class MyClass {
 	var someProperty: String = ""
-	
-	@Suppress("SETTER_DECL_TARGET_PROPERTY_UNSUPPORTED")
-	fun `set-someProperty`(value: Int) {
-		someProperty = value.toString()
-	}
 }
 
+// FILE: MyExtensions.kt
+
+import foo.MyClass
+
+fun MyClass.<!SETTER_DECL_TARGET_PROPERTY_UNSUPPORTED!>`set-someProperty`<!>(value: Int) {
+	someProperty = value.toString()
+}
 
 // MODULE: main(lib)
 // FILE: bar.kt

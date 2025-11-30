@@ -6,6 +6,7 @@ import org.jetbrains.kotlin.fir.analysis.checkers.toRegularClassSymbol
 import org.jetbrains.kotlin.fir.declarations.FirFunction
 import org.jetbrains.kotlin.fir.declarations.FirResolvePhase
 import org.jetbrains.kotlin.fir.declarations.FirSimpleFunction
+import org.jetbrains.kotlin.fir.declarations.declaredProperties
 import org.jetbrains.kotlin.fir.declarations.processAllDeclaredCallables
 import org.jetbrains.kotlin.fir.declarations.utils.isExtension
 import org.jetbrains.kotlin.fir.resolve.getContainingClass
@@ -16,6 +17,7 @@ import org.jetbrains.kotlin.fir.symbols.impl.FirCallableSymbol
 import org.jetbrains.kotlin.fir.symbols.impl.FirClassSymbol
 import org.jetbrains.kotlin.fir.symbols.impl.FirPropertySymbol
 import org.jetbrains.kotlin.fir.symbols.impl.FirRegularClassSymbol
+import org.jetbrains.kotlin.name.Name
 
 fun String.capitalize() = replaceFirstChar { if (it.isLowerCase()) it.uppercaseChar() else it }
 fun String.uncapitalize() = replaceFirstChar { if (it.isUpperCase()) it.lowercaseChar() else it }
@@ -53,4 +55,9 @@ fun FirFunction.getReceiverClass(session: FirSession): FirRegularClassSymbol? {
 		this.isExtension -> this.receiverParameter?.typeRef?.toRegularClassSymbol(session)
 		else -> this.getContainingClass()?.symbol
 	}
+}
+
+fun findPropertyByName(owningClass: FirClassSymbol<*>, propertyName: String, session: FirSession): FirPropertySymbol? {
+	val name = Name.identifier(propertyName)
+	return owningClass.declaredProperties(session).find { it.name == name }
 }

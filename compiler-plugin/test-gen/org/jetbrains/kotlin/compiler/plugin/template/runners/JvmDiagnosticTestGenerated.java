@@ -22,19 +22,145 @@ public class JvmDiagnosticTestGenerated extends AbstractJvmDiagnosticTest {
     KtTestUtil.assertAllTestsPresentByMetadataWithExcluded(this.getClass(), new File("compiler-plugin/testData/diagnostics"), Pattern.compile("^(.+)\\.kt$"), null, TargetBackend.JVM_IR, true);
   }
 
+  @Test
+  @TestMetadata("controlTest.kt")
+  public void testControlTest() {
+    runTest("compiler-plugin/testData/diagnostics/controlTest.kt");
+  }
+
   @Nested
-  @TestMetadata("compiler-plugin/testData/diagnostics/extension-methods-infile")
+  @TestMetadata("compiler-plugin/testData/diagnostics/declaration")
   @TestDataPath("$PROJECT_ROOT")
-  public class Extension_methods_infile {
+  public class Declaration {
     @Test
-    public void testAllFilesPresentInExtension_methods_infile() {
-      KtTestUtil.assertAllTestsPresentByMetadataWithExcluded(this.getClass(), new File("compiler-plugin/testData/diagnostics/extension-methods-infile"), Pattern.compile("^(.+)\\.kt$"), null, TargetBackend.JVM_IR, true);
+    public void testAllFilesPresentInDeclaration() {
+      KtTestUtil.assertAllTestsPresentByMetadataWithExcluded(this.getClass(), new File("compiler-plugin/testData/diagnostics/declaration"), Pattern.compile("^(.+)\\.kt$"), null, TargetBackend.JVM_IR, true);
+    }
+
+    @Nested
+    @TestMetadata("compiler-plugin/testData/diagnostics/declaration/A no error")
+    @TestDataPath("$PROJECT_ROOT")
+    public class A_no_error {
+      @Test
+      public void testAllFilesPresentInA_no_error() {
+        KtTestUtil.assertAllTestsPresentByMetadataWithExcluded(this.getClass(), new File("compiler-plugin/testData/diagnostics/declaration/A no error"), Pattern.compile("^(.+)\\.kt$"), null, TargetBackend.JVM_IR, true);
+      }
+
+      @Test
+      @TestMetadata("extMethod.kt")
+      public void testExtMethod() {
+        runTest("compiler-plugin/testData/diagnostics/declaration/A no error/extMethod.kt");
+      }
+
+      @Test
+      @TestMetadata("inClass.kt")
+      public void testInClass() {
+        runTest("compiler-plugin/testData/diagnostics/declaration/A no error/inClass.kt");
+      }
+    }
+
+    @Nested
+    @TestMetadata("compiler-plugin/testData/diagnostics/declaration/B target property not found")
+    @TestDataPath("$PROJECT_ROOT")
+    public class B_target_property_not_found {
+      @Test
+      public void testAllFilesPresentInB_target_property_not_found() {
+        KtTestUtil.assertAllTestsPresentByMetadataWithExcluded(this.getClass(), new File("compiler-plugin/testData/diagnostics/declaration/B target property not found"), Pattern.compile("^(.+)\\.kt$"), null, TargetBackend.JVM_IR, true);
+      }
+
+      @Test
+      @TestMetadata("extMethod.kt")
+      public void testExtMethod() {
+        runTest("compiler-plugin/testData/diagnostics/declaration/B target property not found/extMethod.kt");
+      }
+
+      @Test
+      @TestMetadata("inClass.kt")
+      public void testInClass() {
+        runTest("compiler-plugin/testData/diagnostics/declaration/B target property not found/inClass.kt");
+      }
+    }
+
+    @Nested
+    @TestMetadata("compiler-plugin/testData/diagnostics/declaration/C target property unsupported")
+    @TestDataPath("$PROJECT_ROOT")
+    public class C_target_property_unsupported {
+      @Test
+      public void testAllFilesPresentInC_target_property_unsupported() {
+        KtTestUtil.assertAllTestsPresentByMetadataWithExcluded(this.getClass(), new File("compiler-plugin/testData/diagnostics/declaration/C target property unsupported"), Pattern.compile("^(.+)\\.kt$"), null, TargetBackend.JVM_IR, true);
+      }
+
+      @Test
+      @TestMetadata("extMethod.kt")
+      public void testExtMethod() {
+        runTest("compiler-plugin/testData/diagnostics/declaration/C target property unsupported/extMethod.kt");
+      }
+
+      @Test
+      @TestMetadata("inClass.kt")
+      public void testInClass() {
+        runTest("compiler-plugin/testData/diagnostics/declaration/C target property unsupported/inClass.kt");
+      }
+    }
+
+    @Nested
+    @TestMetadata("compiler-plugin/testData/diagnostics/declaration/D target property not visible")
+    @TestDataPath("$PROJECT_ROOT")
+    public class D_target_property_not_visible {
+      @Test
+      public void testAllFilesPresentInD_target_property_not_visible() {
+        KtTestUtil.assertAllTestsPresentByMetadataWithExcluded(this.getClass(), new File("compiler-plugin/testData/diagnostics/declaration/D target property not visible"), Pattern.compile("^(.+)\\.kt$"), null, TargetBackend.JVM_IR, true);
+      }
+
+      @Test
+      @TestMetadata("extMethod.kt")
+      public void testExtMethod() {
+        runTest("compiler-plugin/testData/diagnostics/declaration/D target property not visible/extMethod.kt");
+      }
+
+      @Test
+      @TestMetadata("inClass.kt")
+      public void testInClass() {
+        runTest("compiler-plugin/testData/diagnostics/declaration/D target property not visible/inClass.kt");
+      }
+    }
+
+    @Nested
+    @TestMetadata("compiler-plugin/testData/diagnostics/declaration/E cannot widen visibility")
+    @TestDataPath("$PROJECT_ROOT")
+    public class E_cannot_widen_visibility {
+      @Test
+      public void testAllFilesPresentInE_cannot_widen_visibility() {
+        KtTestUtil.assertAllTestsPresentByMetadataWithExcluded(this.getClass(), new File("compiler-plugin/testData/diagnostics/declaration/E cannot widen visibility"), Pattern.compile("^(.+)\\.kt$"), null, TargetBackend.JVM_IR, true);
+      }
+
+      @Test
+      @TestMetadata("extMethod.kt")
+      public void testExtMethod() {
+        runTest("compiler-plugin/testData/diagnostics/declaration/E cannot widen visibility/extMethod.kt");
+      }
+
+      @Test
+      @TestMetadata("inClass.kt")
+      public void testInClass() {
+        runTest("compiler-plugin/testData/diagnostics/declaration/E cannot widen visibility/inClass.kt");
+      }
+    }
+  }
+
+  @Nested
+  @TestMetadata("compiler-plugin/testData/diagnostics/workshop")
+  @TestDataPath("$PROJECT_ROOT")
+  public class Workshop {
+    @Test
+    public void testAllFilesPresentInWorkshop() {
+      KtTestUtil.assertAllTestsPresentByMetadataWithExcluded(this.getClass(), new File("compiler-plugin/testData/diagnostics/workshop"), Pattern.compile("^(.+)\\.kt$"), null, TargetBackend.JVM_IR, true);
     }
 
     @Test
-    @TestMetadata("foo.kt")
-    public void testFoo() {
-      runTest("compiler-plugin/testData/diagnostics/extension-methods-infile/foo.kt");
+    @TestMetadata("workshop.kt")
+    public void testWorkshop() {
+      runTest("compiler-plugin/testData/diagnostics/workshop/workshop.kt");
     }
   }
 }

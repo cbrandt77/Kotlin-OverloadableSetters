@@ -1,6 +1,7 @@
 package cb77.lang.plugins.kt.overloadablesetters.fir.diagnostics
 
 import org.jetbrains.annotations.ApiStatus
+import org.jetbrains.kotlin.descriptors.Visibility
 import org.jetbrains.kotlin.diagnostics.KtDiagnosticsContainer
 import org.jetbrains.kotlin.diagnostics.SourceElementPositioningStrategies
 import org.jetbrains.kotlin.diagnostics.error0
@@ -27,18 +28,52 @@ object FirOverloadedSetterErrors : KtDiagnosticsContainer() {
 	 * For a function `set-bar`: the property "`bar`" doesn't exist in the scope.
 	 *
 	 * Should be suppressable, since it might apply to functions that aren't supposed to be overloaded setters.
+	 *
+	 * @param _1 The name of what would be the target property, from the name of the function.
 	 */
+	@Suppress("KDocUnresolvedReference")
 	val SETTER_DECL_TARGET_PROPERTY_NOT_FOUND by warning1<KtNamedFunction, String>(SourceElementPositioningStrategies.DECLARATION_NAME)
 	
 	/**
 	 * For a function `set-bar`: the property "`bar`" exists in the scope, but is not marked as supporting custom setters.
 	 *
 	 * Should be suppressable, since it might apply to functions that aren't supposed to be overloaded setters.
+	 *
+	 * @param _1 The target property the setter function's name invokes.
 	 */
+	@Suppress("KDocUnresolvedReference")
 	val SETTER_DECL_TARGET_PROPERTY_UNSUPPORTED by warning1<KtNamedFunction, FirPropertySymbol>(SourceElementPositioningStrategies.DECLARATION_NAME)
 	
 	
 	// ERRORS: (Applies only to functions we know are intended to be overloaded property setters)
+	/**
+	 * For a function `MyClass#set-bar`, `MyClass#bar` is not visible to the declaration.
+	 *
+	 * This is mainly a sanity check, not a restriction.  If it's not visible to the caller, then it can't do its job.
+	 *
+	 * @param _1 The target property the setter function's name invokes.
+	 */
+	@Suppress("KDocUnresolvedReference")
+	val SETTER_DECL_TARGET_PROPERTY_NOT_VISIBLE by error1<KtNamedFunction, FirPropertySymbol>(SourceElementPositioningStrategies.DECLARATION_NAME)
+	
+	/**
+	 * For a setter function `MyClass#set-bar`, `set-bar` has wider visibility than `bar`.
+	 *
+	 * This is an issue because the visibility system is baked into the IDEs' autocomplete systems,
+	 * so referencing invisible properties will make them freak out.
+	 *
+	 * Note that a similar thing of referencing a private setter _should_ be allowed, because that's an intended use-case.
+	 * But also if the setter isn't accessible to the caller, that's a different IDE lint.
+	 * (Of course, I don't know how well the IDE will react to trying to "invoke" a private setter, but we'll see when we get there.) TODO
+	 *
+	 * @param _1 The target property
+	 * @param _2 The target property's visibility
+	 * @param _3 The setter function's visibility
+	 */
+	@Suppress("KDocUnresolvedReference")
+	val SETTER_DECL_CANNOT_WIDEN_VISIBILITY by error3<KtNamedFunction, FirPropertySymbol, Visibility, Visibility>(SourceElementPositioningStrategies.DECLARATION_NAME)
+	
+	
 	/**
 	 * A setter function has more than one value parameter.
 	 *
@@ -54,7 +89,11 @@ object FirOverloadedSetterErrors : KtDiagnosticsContainer() {
 	 * A setter function's input parameter is the same as the property it's setting, so it would "shadow" it.
 	 *
 	 * This is a warning because having two functions for the default case would make function call resolution kinda screwy.
+	 *
+	 * @param _1 The setter's type
+	 * @param _2 The property's type
 	 */
+	@Suppress("KDocUnresolvedReference")
 	val SETTER_DECL_PARAMETER_SHADOWS_PROPERTY_TYPE by error2<KtParameter, ConeKotlinType, ConeKotlinType>(SourceElementPositioningStrategies.DECLARATION_RETURN_TYPE)
 	
 	/**

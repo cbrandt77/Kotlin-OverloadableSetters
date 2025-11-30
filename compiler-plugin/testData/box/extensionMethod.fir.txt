@@ -20,11 +20,11 @@ FILE: extensionMethod.kt
 
     }
     public final fun R|MyClass|.set-bar(value: R|kotlin/Int|): R|kotlin/Unit| {
-        this@R|/setBar|.R|/MyClass.set-bar|(R|<local>/value|.R|kotlin/Int.toString|())
+        this@R|/set-bar|.R|/MyClass.set-bar|(R|<local>/value|.R|kotlin/Int.toString|())
     }
     public final fun box(): R|kotlin/String| {
         lval inst: R|MyClass| = R|/MyClass.MyClass|()
-        R|<local>/inst|.R|/MyClass.set-bar|(Int(0))
+        R|<local>/inst|.R|/set-bar|(Int(0))
         lval result: R|kotlin/String| = R|<local>/inst|.R|/MyClass.bar|
         ^box when () {
             ==(R|<local>/result|, String(0)) ->  {

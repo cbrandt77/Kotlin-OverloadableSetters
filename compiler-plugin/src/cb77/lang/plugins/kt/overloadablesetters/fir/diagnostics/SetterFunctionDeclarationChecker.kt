@@ -1,18 +1,26 @@
 package cb77.lang.plugins.kt.overloadablesetters.fir.diagnostics
 
 import cb77.lang.plugins.kt.overloadablesetters.fir.setterOverloadFinderService
+import cb77.lang.plugins.kt.overloadablesetters.util.findPropertyByName
 import cb77.lang.plugins.kt.overloadablesetters.util.getPropertyNameFromSetterName
 import cb77.lang.plugins.kt.overloadablesetters.util.getReceiverClass
+import cb77.lang.plugins.kt.overloadablesetters.util.isVisibleFrom
+import org.jetbrains.kotlin.descriptors.Visibilities
+import org.jetbrains.kotlin.descriptors.Visibility
 import org.jetbrains.kotlin.diagnostics.DiagnosticReporter
 import org.jetbrains.kotlin.diagnostics.reportOn
 import org.jetbrains.kotlin.fir.analysis.checkers.MppCheckerKind
 import org.jetbrains.kotlin.fir.analysis.checkers.context.CheckerContext
 import org.jetbrains.kotlin.fir.analysis.checkers.declaration.FirFunctionChecker
+import org.jetbrains.kotlin.fir.analysis.checkers.findClosestClassOrObject
+import org.jetbrains.kotlin.fir.analysis.checkers.hasModifier
+import org.jetbrains.kotlin.fir.analysis.checkers.isVisibleInClass
 import org.jetbrains.kotlin.fir.declarations.FirDeclarationOrigin
 import org.jetbrains.kotlin.fir.declarations.FirFunction
 import org.jetbrains.kotlin.fir.declarations.declaredProperties
 import org.jetbrains.kotlin.fir.declarations.utils.isExtension
 import org.jetbrains.kotlin.fir.declarations.utils.nameOrSpecialName
+import org.jetbrains.kotlin.fir.declarations.utils.visibility
 import org.jetbrains.kotlin.fir.resolve.getContainingClass
 import org.jetbrains.kotlin.fir.resolve.toClassSymbol
 import org.jetbrains.kotlin.fir.symbols.impl.FirClassSymbol
@@ -21,6 +29,7 @@ import org.jetbrains.kotlin.fir.types.coneType
 import org.jetbrains.kotlin.fir.types.coneTypeOrNull
 import org.jetbrains.kotlin.fir.types.isUnit
 import org.jetbrains.kotlin.fir.utils.exceptions.withFirEntry
+import org.jetbrains.kotlin.lexer.KtModifierKeywordToken
 import org.jetbrains.kotlin.name.Name
 import org.jetbrains.kotlin.utils.exceptions.errorWithAttachment
 
@@ -39,7 +48,7 @@ object SetterFunctionDeclarationChecker : FirFunctionChecker(MppCheckerKind.Comm
 												 withFirEntry("function", declaration)
 											 }
 		
-		val referencedProperty: FirPropertySymbol = findPropertyByName(owningClass, referencedPropertyName).let {
+		val referencedProperty: FirPropertySymbol = findPropertyByName(owningClass, referencedPropertyName, ctx.session).let {
 			when {
 				// These should be suppressable in case it's acting on an unintended place, so we short-circuit here
 				it == null -> {
@@ -54,12 +63,16 @@ object SetterFunctionDeclarationChecker : FirFunctionChecker(MppCheckerKind.Comm
 			} // idk why doing these guards as "if/elif" statements doesn't smart-cast `referencedProperty` to non-nullable when they both return
 		}
 		
-		"".toInt
-		
-		
-		
-		
 		// Now we're only acting on functions that are DEFINITELY meant to be our custom setters
+		
+		
+		
+		if (!referencedProperty.isVisibleFrom(declaration.symbol)) {
+			reporter.reportOn(declaration.source, FirOverloadedSetterErrors.SETTER_DECL_TARGET_PROPERTY_NOT_VISIBLE, referencedProperty)
+		}
+		else if (declaration.visibility > referencedProperty.visibility){
+			reporter.reportOn(declaration.source, FirOverloadedSetterErrors.SETTER_DECL_CANNOT_WIDEN_VISIBILITY, referencedProperty, referencedProperty.visibility, declaration.visibility)
+		}
 		
 		// PARAMETERS:
 		if (declaration.valueParameters.size != 1) {
@@ -86,9 +99,7 @@ object SetterFunctionDeclarationChecker : FirFunctionChecker(MppCheckerKind.Comm
 		}
 	}
 	
-	context(ctx: CheckerContext) // TODO change to full scope search to find extension properties
-	fun findPropertyByName(owningClass: FirClassSymbol<*>, propertyName: String): FirPropertySymbol? {
-		val name = Name.identifier(propertyName)
-		return owningClass.declaredProperties(ctx.session).find { it.name == name }
+	private operator fun Visibility.compareTo(other: Visibility): Int {
+		return this.compareTo(other) ?: 0
 	}
 }

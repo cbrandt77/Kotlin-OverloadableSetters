@@ -18,7 +18,7 @@ private class ExtensionRegistrarConfigurator(testServices: TestServices) : Envir
     companion object {
         private val TEST_ANNOTATIONS = listOf(
                 "HasCustomSetters",
-                "qualified.HasCustomSetters"
+                "annotations.HasCustomSetters"
         )
     }
     

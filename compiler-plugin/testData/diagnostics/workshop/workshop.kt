@@ -26,8 +26,12 @@ package bar;
 
 import foo.MyClass
 
+fun MyClass.foo() {
+	this.someProperty = "foooo"
+}
+
 fun test() {
 	val x = MyClass()
 	x.someProperty = "a string"
-	x.someProperty = <!ASSIGNMENT_TYPE_MISMATCH!>2<!>
+	x.foo()
 }

@@ -3,17 +3,18 @@
 // MODULE: lib
 // FILE: HasCustomSetters.kt
 package annotations;
+
 annotation class HasCustomSetters
 
-// FILE: foo.kt
+// FILE: MyClass.kt
 package foo;
 
 import annotations.HasCustomSetters
 
 class MyClass {
+	@HasCustomSetters
 	var someProperty: String = ""
 	
-	@Suppress("SETTER_DECL_TARGET_PROPERTY_UNSUPPORTED")
 	fun `set-someProperty`(value: Int) {
 		someProperty = value.toString()
 	}
@@ -29,5 +30,5 @@ import foo.MyClass
 fun test() {
 	val x = MyClass()
 	x.someProperty = "a string"
-	x.someProperty = <!ASSIGNMENT_TYPE_MISMATCH!>2<!>
+	x.someProperty = 2
 }

@@ -8,6 +8,7 @@ import org.jetbrains.kotlin.fir.declarations.hasAnnotation
 import org.jetbrains.kotlin.fir.extensions.FirExtensionSessionComponent
 import org.jetbrains.kotlin.fir.symbols.impl.FirPropertySymbol
 import org.jetbrains.kotlin.name.ClassId
+import org.jetbrains.kotlin.name.FqName
 import org.jetbrains.kotlin.utils.mapToSetOrEmpty
 
 val FirSession.setterOverloadFinderService: FirSetterOverloadFinderService by FirSession.sessionComponentAccessor()
@@ -16,7 +17,7 @@ class FirSetterOverloadFinderService(pSession: FirSession, val propertyAnnotatio
 	companion object {
 		fun getFactory(annotations: Collection<String>): Factory {
 			return Factory { session ->
-				FirSetterOverloadFinderService(session, annotations.mapToSetOrEmpty(ClassId::fromString))
+				FirSetterOverloadFinderService(session, annotations.mapToSetOrEmpty { ClassId.topLevel(FqName(it)) })
 			}
 		}
 	}

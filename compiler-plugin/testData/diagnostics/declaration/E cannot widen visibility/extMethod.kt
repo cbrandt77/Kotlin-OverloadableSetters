@@ -5,26 +5,29 @@
 package annotations;
 annotation class HasCustomSetters
 
-// FILE: foo.kt
+// FILE: MyClass.kt
 package foo;
 
 import annotations.HasCustomSetters
 
-class MyClass {
-	var someProperty: String = ""
+
+class MyOuterClass {
+	class MyClass {
+		@HasCustomSetters
+		private var someProperty: String = ""
+	}
 	
-	@Suppress("SETTER_DECL_TARGET_PROPERTY_UNSUPPORTED")
-	fun `set-someProperty`(value: Int) {
+	fun MyClass.<!SETTER_DECL_CANNOT_WIDEN_VISIBILITY!>`set-someProperty`<!>(value: Int) {
 		someProperty = value.toString()
 	}
 }
-
 
 // MODULE: main(lib)
 // FILE: bar.kt
 package bar;
 
-import foo.MyClass
+import foo.MyOuterClass.MyClass
+import foo.MyOuterClass.`set-someProperty`
 
 fun test() {
 	val x = MyClass()

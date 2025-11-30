@@ -9,6 +9,7 @@ import org.jetbrains.kotlin.diagnostics.error1
 import org.jetbrains.kotlin.diagnostics.error2
 import org.jetbrains.kotlin.diagnostics.error3
 import org.jetbrains.kotlin.diagnostics.warning1
+import org.jetbrains.kotlin.fir.symbols.impl.FirClassSymbol
 import org.jetbrains.kotlin.fir.symbols.impl.FirPropertySymbol
 import org.jetbrains.kotlin.fir.types.ConeKotlinType
 import org.jetbrains.kotlin.psi.KtContextReceiverList
@@ -49,7 +50,7 @@ object FirOverloadedSetterErrors : KtDiagnosticsContainer() {
 	/**
 	 * For a function `MyClass#set-bar`, `MyClass#bar` is not visible to the declaration.
 	 *
-	 * This is mainly a sanity check, not a restriction.  If it's not visible to the caller, then it can't do its job.
+	 * This is mainly a sanity check, not a restriction.  If it's not visible to the setter function, then the setter function can't do its job.
 	 *
 	 * @param _1 The target property the setter function's name invokes.
 	 */
@@ -64,10 +65,13 @@ object FirOverloadedSetterErrors : KtDiagnosticsContainer() {
 	 *
 	 * Note that a similar thing of referencing a private setter _should_ be allowed, because that's an intended use-case.
 	 * But also if the setter isn't accessible to the caller, that's a different IDE lint.
-	 * (Of course, I don't know how well the IDE will react to trying to "invoke" a private setter, but we'll see when we get there.) TODO
+	 * (Of course, I don't know how well the IDE will react to trying to "invoke" a private setter from outside the class, but we'll see when we get there.)
+	 * TODO
+	 *
+	 * The actual error used is the vanilla [CANNOT_WEAKEN_ACCESS_PRIVILEGE][org.jetbrains.kotlin.fir.analysis.diagnostics.FirErrors.CANNOT_WEAKEN_ACCESS_PRIVILEGE].
 	 */
-	@Deprecated("Only here for documenting the error", replaceWith = ReplaceWith("FirErrors.CANNOT_WEAKEN_ACCESS_PRIVILEGE", "org.jetbrains.kotlin.fir.analysis.diagnostics.FirErrors.CANNOT_WEAKEN_ACCESS_PRIVILEGE"))
-	val SETTER_DECL_CANNOT_WIDEN_VISIBILITY: Nothing? = null
+	@Suppress("UNUSED") @Deprecated("Only here for documenting the error")
+	private val SETTER_DECL_CANNOT_WIDEN_VISIBILITY: Nothing? = null
 	
 	
 	/**

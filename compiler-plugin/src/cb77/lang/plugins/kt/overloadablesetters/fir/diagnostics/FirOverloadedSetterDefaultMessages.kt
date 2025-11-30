@@ -3,6 +3,7 @@ package cb77.lang.plugins.kt.overloadablesetters.fir.diagnostics
 import org.jetbrains.kotlin.diagnostics.KtDiagnosticFactoryToRendererMap
 import org.jetbrains.kotlin.diagnostics.rendering.BaseDiagnosticRendererFactory
 import org.jetbrains.kotlin.diagnostics.rendering.CommonRenderers.STRING
+import org.jetbrains.kotlin.fir.analysis.diagnostics.FirDiagnosticRenderers
 import org.jetbrains.kotlin.fir.analysis.diagnostics.FirDiagnosticRenderers.RENDER_COLLECTION_OF_TYPES
 import org.jetbrains.kotlin.fir.analysis.diagnostics.FirDiagnosticRenderers.RENDER_TYPE
 
@@ -28,7 +29,13 @@ object FirOverloadedSetterDefaultMessages : BaseDiagnosticRendererFactory() {
 			
 			put(
 				FirOverloadedSetterErrors.SETTER_ANNOTATED_PROP_NOT_MUTABLE,
-				"''@HasCustomSetters'' can only be applied to mutable properties.",
+				"A 'val' property cannot have a setter.",
+			)
+			
+			put(
+					FirOverloadedSetterErrors.SETTER_DECL_TARGET_PROPERTY_NOT_VISIBLE,
+					"Setter target ''{0}'' is not visible in this scope.",
+					FirDiagnosticRenderers.SYMBOL_WITH_CONTAINING_DECLARATION
 			)
 		}
 	}

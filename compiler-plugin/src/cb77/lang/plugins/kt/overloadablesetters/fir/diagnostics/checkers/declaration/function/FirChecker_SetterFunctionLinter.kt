@@ -35,10 +35,8 @@ object FirChecker_SetterFunctionLinter : FirFunctionChecker(MppCheckerKind.Commo
 		val referencedPropertyName = getPropertyNameFromSetterName(declaration.nameOrSpecialName)
 		                             ?: return;
 		
-		val owningClass: FirClassSymbol<*> = declaration.getReceiverClass(ctx.session)
-		                                     ?: errorWithAttachment("No owning class found for function") {
-			                                     withFirEntry("function", declaration)
-		                                     }
+		val owningClass: FirClassSymbol<*> = declaration.getReceiverClass(ctx.session) // if it's not a method (extension or otherwise), don't take it
+		                                     ?: return;
 		
 		val referencedProperty: FirPropertySymbol = findPropertyByName(owningClass, referencedPropertyName, ctx.session).toList().let { allFoo ->
 			if (allFoo.isEmpty()) {

@@ -1,6 +1,6 @@
 package cb77.lang.plugins.kt.overloadablesetters.fir.extensions
 
-import cb77.lang.plugins.kt.overloadablesetters.NamesAndIds
+import cb77.lang.plugins.kt.overloadablesetters.util.getDeclaredAndInheritedCallables
 import cb77.lang.plugins.kt.overloadablesetters.util.makeSetterName
 import cb77.lang.plugins.kt.overloadablesetters.util.supportsCustomSetters
 import org.jetbrains.kotlin.GeneratedDeclarationKey
@@ -17,14 +17,12 @@ import org.jetbrains.kotlin.fir.declarations.FirResolvePhase
 import org.jetbrains.kotlin.fir.declarations.FirSimpleFunction
 import org.jetbrains.kotlin.fir.declarations.builder.buildSimpleFunction
 import org.jetbrains.kotlin.fir.declarations.builder.buildValueParameter
-import org.jetbrains.kotlin.fir.declarations.declaredProperties
 import org.jetbrains.kotlin.fir.declarations.impl.FirResolvedDeclarationStatusImpl
 import org.jetbrains.kotlin.fir.declarations.origin
 import org.jetbrains.kotlin.fir.declarations.utils.canNarrowDownGetterType
-import org.jetbrains.kotlin.fir.expressions.FirAnnotation
 import org.jetbrains.kotlin.fir.expressions.builder.buildAnnotation
 import org.jetbrains.kotlin.fir.expressions.builder.buildAnnotationArgumentMapping
-import org.jetbrains.kotlin.fir.expressions.builder.buildClassReferenceExpression
+import org.jetbrains.kotlin.fir.expressions.builder.buildEnumEntryDeserializedAccessExpression
 import org.jetbrains.kotlin.fir.expressions.builder.buildLiteralExpression
 import org.jetbrains.kotlin.fir.expressions.builder.buildPropertyAccessExpression
 import org.jetbrains.kotlin.fir.expressions.builder.buildThisReceiverExpression
@@ -45,9 +43,10 @@ import org.jetbrains.kotlin.fir.types.builder.buildResolvedTypeRef
 import org.jetbrains.kotlin.fir.types.coneTypeOrNull
 import org.jetbrains.kotlin.fir.types.constructClassLikeType
 import org.jetbrains.kotlin.name.CallableId
-import org.jetbrains.kotlin.name.ClassId
 import org.jetbrains.kotlin.name.Name
 import org.jetbrains.kotlin.name.SpecialNames
+import org.jetbrains.kotlin.name.StandardClassIds
+import org.jetbrains.kotlin.resolve.deprecation.DeprecationLevelValue
 import org.jetbrains.kotlin.types.ConstantValueKind
 import org.jetbrains.kotlin.utils.addToStdlib.runIf
 import org.jetbrains.kotlin.utils.mapToSetOrEmpty
@@ -58,40 +57,6 @@ import org.jetbrains.kotlin.utils.mapToSetOrEmpty
  */
 class FirDefaultSetterGenerator(session: FirSession) : FirDeclarationGenerationExtension(session) {
 	object OverloadableSettersDeclarationKey : GeneratedDeclarationKey()
-	
-	companion object {
-		private val jvmNameAnnotationRef by lazy {
-			buildResolvedTypeRef {
-				coneType = ClassId.topLevel(NamesAndIds.ANNOT_JVMNAME).constructClassLikeType()
-			}
-		}
-		private val metadataAnnotationRef by lazy {
-			buildResolvedTypeRef {
-				coneType = ClassId.topLevel(NamesAndIds.ANNOT_DEFAULTSETTERMETADATA).constructClassLikeType()
-			}
-		}
-		
-		fun jvmNameAnnotation(name: String) = buildAnnotation {
-			annotationTypeRef = jvmNameAnnotationRef
-			argumentMapping = buildAnnotationArgumentMapping {
-				mapping.put(NamesAndIds.NAME, buildLiteralExpression(null, ConstantValueKind.String, name, setType = true))
-			}
-		}
-		
-		fun makeDefaultSetterJvmNameAnnotation(setterName: String): FirAnnotation {
-			return jvmNameAnnotation($$$"$$OverloadedSetters$" + setterName)
-		}
-		
-		fun makeDefaultSetterMetadataAnnotation(prop: FirPropertySymbol) = buildAnnotation {
-			annotationTypeRef = metadataAnnotationRef
-			argumentMapping = buildAnnotationArgumentMapping {
-				mapping.put(NamesAndIds.NAME, buildLiteralExpression(null, ConstantValueKind.String, prop.name, setType = true))
-				mapping.put(NamesAndIds.TYPE, buildClassReferenceExpression {
-					classTypeRef = prop.resolvedReturnTypeRef
-				})
-			}
-		}
-	}
 	
 	/**
 	 * Given a class, gets all of its properties that support custom setters, mapped to their setter names.
@@ -107,23 +72,23 @@ class FirDefaultSetterGenerator(session: FirSession) : FirDeclarationGenerationE
 	 *
 	 * The map is because we can't just do the functions, we have to first say what the names of the functions we want to emit are and THEN do the functions, which necessitates two lookups per property.
 	 */
-	val intermediatePropertiesCache: FirCache<FirClassSymbol<*>, Map<Name, FirPropertySymbol>, Nothing?> = session.firCachesFactory.createCache { owningClass, _ ->
-		val ret = mutableMapOf<Name, FirPropertySymbol>()
-		
+	private val intermediatePropertiesCache: FirCache<FirClassSymbol<*>, Map<Name, FirPropertySymbol>, Nothing?> = session.firCachesFactory.createCache { owningClass, _ ->
 		calledFromCache.set(true)
-		for (prop in owningClass.declaredProperties(session, FirResolvePhase.SUPER_TYPES)) {
-			if (!prop.supportsCustomSetters(session))
-				continue;
-			
-			ret[Name.identifier(makeSetterName(prop))] = prop
-		}
-		calledFromCache.set(false)
 		
-		return@createCache ret
+		owningClass.getDeclaredAndInheritedCallables(session, FirResolvePhase.SUPER_TYPES)
+			.filterIsInstance<FirPropertySymbol>()
+			.filter { it.supportsCustomSetters(session) }
+			.associateBy { Name.identifier(makeSetterName(it)) }
+			
+			.also {
+				calledFromCache.set(false)
+			}
 	}
 	
-	/// Prevent infinite recursion from cache#getValue -> owningClass#declaredProperties -> getCallableNamesForClass -> cache#getValue
-	val calledFromCache: ThreadLocal<Boolean> = ThreadLocal.withInitial { false }
+	/**
+	 * Prevent infinite recursion from `cache#getValue` -> `owningClass#declaredProperties` -> `getCallableNamesForClass` -> `cache#getValue`
+ 	 */
+	private val calledFromCache: ThreadLocal<Boolean> = ThreadLocal.withInitial { false }
 	
 	override fun getCallableNamesForClass(classSymbol: FirClassSymbol<*>, context: MemberGenerationContext): Set<Name> {
 		if (calledFromCache.get())
@@ -138,7 +103,9 @@ class FirDefaultSetterGenerator(session: FirSession) : FirDeclarationGenerationE
 	// thankfully the `getCallableNames` method doesn't have to be side-effect-free
 	override fun generateFunctions(callableId: CallableId, context: MemberGenerationContext?): List<FirNamedFunctionSymbol> {
 		val owningClass = context?.owner ?: return emptyList()
-		val propertyForSetter = intermediatePropertiesCache.getValue(owningClass)[callableId.callableName] ?: throw IllegalArgumentException("No property found in class $owningClass for name ${callableId.callableName}")
+		val propertyForSetter = intermediatePropertiesCache.getValue(owningClass)[callableId.callableName]
+		                        ?: throw IllegalArgumentException("No property found in class $owningClass for name ${callableId.callableName}")
+		
 		return listOf(makeDefaultSetterStub(owningClass, propertyForSetter, callableId.callableName).symbol)
 	}
 	
@@ -173,13 +140,38 @@ class FirDefaultSetterGenerator(session: FirSession) : FirDeclarationGenerationE
 			returnTypeRef = session.builtinTypes.unitType
 			
 			annotations += listOf(
-					makeDefaultSetterJvmNameAnnotation(setterName.asString()), // TODO figure out how to mangle names
+					// JvmName TODO figure out how to mangle names
+					buildAnnotation {
+						source = ourSource
+						annotationTypeRef = buildResolvedTypeRef {
+							source = ourSource
+							coneType = StandardClassIds.Annotations.jvmName.constructClassLikeType()
+						}
+						argumentMapping = buildAnnotationArgumentMapping {
+							mapping[StandardClassIds.Annotations.ParameterNames.parameterNameName] = buildLiteralExpression(ourSource, ConstantValueKind.String, getJvmNameForSetter(setterName.asString()), setType=true)
+						}
+					},
+					// Deprecated(HIDDEN) TODO figure out how to hide the declaration from IDE autocomplete
+					buildAnnotation {
+						source = ourSource
+						annotationTypeRef = buildResolvedTypeRef {
+							source = ourSource
+							coneType = StandardClassIds.Annotations.Deprecated.constructClassLikeType()
+						}
+						argumentMapping = buildAnnotationArgumentMapping {
+							mapping[StandardClassIds.Annotations.ParameterNames.deprecatedMessage] = buildLiteralExpression(ourSource, ConstantValueKind.String, "Use actual property setter", setType=true)
+							mapping[StandardClassIds.Annotations.ParameterNames.deprecatedLevel] = buildEnumEntryDeserializedAccessExpression {
+								enumClassId = StandardClassIds.DeprecationLevel
+								enumEntryName = Name.identifier(DeprecationLevelValue.HIDDEN.name)
+							}
+						}
+					}
 			)
 			
 			val parameter = buildValueParameter {
 				source = ourSource
 				containingDeclarationSymbol = this@buildSimpleFunction.symbol
-				this.moduleData = session.moduleData
+				moduleData = session.moduleData
 				origin = OverloadableSettersDeclarationKey.origin
 				returnTypeRef = prop.resolvedReturnTypeRef
 				name = SpecialNames.IMPLICIT_SET_PARAMETER
@@ -204,7 +196,7 @@ class FirDefaultSetterGenerator(session: FirSession) : FirDeclarationGenerationE
 							calleeReference = buildImplicitThisReference {
 								boundSymbol = owningClass
 							}
-							this@buildThisReceiverExpression.coneTypeOrNull = owningClass.defaultType()
+							coneTypeOrNull = owningClass.defaultType()
 						}
 						coneTypeOrNull = runIf(prop.canNarrowDownGetterType) { prop.resolvedReturnType }
 					}
@@ -221,5 +213,9 @@ class FirDefaultSetterGenerator(session: FirSession) : FirDeclarationGenerationE
 			)
 		}
 	}
+}
+
+private fun getJvmNameForSetter(setterName: String): String {
+	return $$$"$$OverloadedSetters$" + setterName
 }
 

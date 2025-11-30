@@ -5,7 +5,7 @@ class MyClass {
 	var bar: String = "MADBAGIC"
 }
 
-fun MyClass.setBar(value: Int) {
+fun MyClass.`set-bar`(value: Int) {
 	bar = value.toString()
 }
 

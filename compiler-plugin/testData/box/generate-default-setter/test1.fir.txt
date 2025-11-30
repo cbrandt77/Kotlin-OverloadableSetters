@@ -14,7 +14,7 @@ FILE: test1.kt
             public get(): R|kotlin/String|
             public set(value: R|kotlin/String|): R|kotlin/Unit|
 
-        @R|kotlin/jvm/JvmName|(name = String($$OverloadedSetters$setBar)) public final fun setBar(<set-?>: R|kotlin/String|): R|kotlin/Unit| {
+        @R|kotlin/jvm/JvmName|(name = String($$OverloadedSetters$set-bar)) public final fun set-bar(<set-?>: R|kotlin/String|): R|kotlin/Unit| {
             this@R|/MyClass|.R|/MyClass.bar| = R|<local>/<set-?>|
         }
 

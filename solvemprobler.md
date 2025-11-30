@@ -47,7 +47,3 @@ Reasons not to:
 - It doesn't have exactly one parameter
 - It has context or type parameters
 - It doesn't return Unit
-
-
-## Callsite
-- 

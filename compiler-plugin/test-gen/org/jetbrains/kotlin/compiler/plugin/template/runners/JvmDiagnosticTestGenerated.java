@@ -6,6 +6,7 @@ import com.intellij.testFramework.TestDataPath;
 import org.jetbrains.kotlin.test.util.KtTestUtil;
 import org.jetbrains.kotlin.test.TargetBackend;
 import org.jetbrains.kotlin.test.TestMetadata;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
 import java.io.File;
@@ -19,5 +20,21 @@ public class JvmDiagnosticTestGenerated extends AbstractJvmDiagnosticTest {
   @Test
   public void testAllFilesPresentInDiagnostics() {
     KtTestUtil.assertAllTestsPresentByMetadataWithExcluded(this.getClass(), new File("compiler-plugin/testData/diagnostics"), Pattern.compile("^(.+)\\.kt$"), null, TargetBackend.JVM_IR, true);
+  }
+
+  @Nested
+  @TestMetadata("compiler-plugin/testData/diagnostics/extension-methods-infile")
+  @TestDataPath("$PROJECT_ROOT")
+  public class Extension_methods_infile {
+    @Test
+    public void testAllFilesPresentInExtension_methods_infile() {
+      KtTestUtil.assertAllTestsPresentByMetadataWithExcluded(this.getClass(), new File("compiler-plugin/testData/diagnostics/extension-methods-infile"), Pattern.compile("^(.+)\\.kt$"), null, TargetBackend.JVM_IR, true);
+    }
+
+    @Test
+    @TestMetadata("foo.kt")
+    public void testFoo() {
+      runTest("compiler-plugin/testData/diagnostics/extension-methods-infile/foo.kt");
+    }
   }
 }

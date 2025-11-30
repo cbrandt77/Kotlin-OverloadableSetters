@@ -3,10 +3,12 @@ package cb77.lang.plugins.kt.overloadablesetters.util
 import cb77.lang.plugins.kt.overloadablesetters.fir.setterOverloadFinderService
 import org.jetbrains.kotlin.fir.FirSession
 import org.jetbrains.kotlin.fir.analysis.checkers.toRegularClassSymbol
+import org.jetbrains.kotlin.fir.declarations.FirFunction
 import org.jetbrains.kotlin.fir.declarations.FirResolvePhase
 import org.jetbrains.kotlin.fir.declarations.FirSimpleFunction
 import org.jetbrains.kotlin.fir.declarations.processAllDeclaredCallables
 import org.jetbrains.kotlin.fir.declarations.utils.isExtension
+import org.jetbrains.kotlin.fir.resolve.getContainingClass
 import org.jetbrains.kotlin.fir.resolve.getSuperTypes
 import org.jetbrains.kotlin.fir.resolve.toClassSymbol
 import org.jetbrains.kotlin.fir.resolve.toRegularClassSymbol
@@ -31,7 +33,7 @@ fun Char.swapCase(): Char {
 }
 
 fun FirPropertySymbol.supportsCustomSetters(session: FirSession): Boolean {
-	return session.setterOverloadFinderService.propertySupportsOverloadedSetters(this, session)
+	return session.setterOverloadFinderService.propertySupportsOverloadedSetters(this)
 }
 
 // no way to
@@ -46,9 +48,9 @@ fun FirClassSymbol<*>.getDeclaredAndInheritedCallables(session: FirSession, memb
 		}
 }
 
-fun FirSimpleFunction.getReceiverClass(session: FirSession): FirRegularClassSymbol? {
+fun FirFunction.getReceiverClass(session: FirSession): FirRegularClassSymbol? {
 	return when {
 		this.isExtension -> this.receiverParameter?.typeRef?.toRegularClassSymbol(session)
-		else -> this.dispatchReceiverType?.toRegularClassSymbol(session)
+		else -> this.getContainingClass()?.symbol
 	}
 }

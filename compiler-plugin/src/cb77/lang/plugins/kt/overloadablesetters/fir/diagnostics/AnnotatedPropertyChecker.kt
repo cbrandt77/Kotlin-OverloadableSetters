@@ -1,6 +1,6 @@
 package cb77.lang.plugins.kt.overloadablesetters.fir.diagnostics
 
-import cb77.lang.plugins.kt.overloadablesetters.fir.diagnostics.FirOverloadedSetterErrors.PROP_NOT_MUTABLE
+import cb77.lang.plugins.kt.overloadablesetters.fir.diagnostics.FirOverloadedSetterErrors.SETTER_ANNOTATED_PROP_NOT_MUTABLE
 import cb77.lang.plugins.kt.overloadablesetters.util.supportsCustomSetters
 import org.jetbrains.kotlin.diagnostics.DiagnosticReporter
 import org.jetbrains.kotlin.diagnostics.reportOn
@@ -13,13 +13,13 @@ import org.jetbrains.kotlin.fir.declarations.FirProperty
 /**
  * Make sure an annotated property is actually mutable
  */
-object OverloadedSetterAnnotatedPropertyChecker : FirPropertyChecker(MppCheckerKind.Common) {
+object AnnotatedPropertyChecker : FirPropertyChecker(MppCheckerKind.Common) {
 	context(context: CheckerContext, reporter: DiagnosticReporter)
 	override fun check(declaration: FirProperty) {
 		if (declaration.origin != FirDeclarationOrigin.Source || !declaration.symbol.supportsCustomSetters(context.session))
 			return;
 		
 		if (!declaration.isVar)
-			reporter.reportOn(declaration.source, PROP_NOT_MUTABLE)
+			reporter.reportOn(declaration.source, SETTER_ANNOTATED_PROP_NOT_MUTABLE)
 	}
 }

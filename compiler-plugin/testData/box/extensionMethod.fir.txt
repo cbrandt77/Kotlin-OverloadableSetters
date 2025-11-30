@@ -14,17 +14,17 @@ FILE: extensionMethod.kt
             public get(): R|kotlin/String|
             public set(value: R|kotlin/String|): R|kotlin/Unit|
 
-        @R|kotlin/jvm/JvmName|(name = String($$OverloadedSetters$setBar)) public final fun setBar(<set-?>: R|kotlin/String|): R|kotlin/Unit| {
+        @R|kotlin/jvm/JvmName|(name = String($$OverloadedSetters$set-bar)) public final fun set-bar(<set-?>: R|kotlin/String|): R|kotlin/Unit| {
             this@R|/MyClass|.R|/MyClass.bar| = R|<local>/<set-?>|
         }
 
     }
-    public final fun R|MyClass|.setBar(value: R|kotlin/Int|): R|kotlin/Unit| {
-        this@R|/setBar|.R|/MyClass.setBar|(R|<local>/value|.R|kotlin/Int.toString|())
+    public final fun R|MyClass|.set-bar(value: R|kotlin/Int|): R|kotlin/Unit| {
+        this@R|/setBar|.R|/MyClass.set-bar|(R|<local>/value|.R|kotlin/Int.toString|())
     }
     public final fun box(): R|kotlin/String| {
         lval inst: R|MyClass| = R|/MyClass.MyClass|()
-        R|<local>/inst|.R|/setBar|(Int(0))
+        R|<local>/inst|.R|/MyClass.set-bar|(Int(0))
         lval result: R|kotlin/String| = R|<local>/inst|.R|/MyClass.bar|
         ^box when () {
             ==(R|<local>/result|, String(0)) ->  {

@@ -4,7 +4,7 @@ class MyClass {
 	@HasCustomSetters
 	var bar: String = "MADBAGIC"
 	
-	fun setBar(value: Int) {
+	fun `set-bar`(value: Int) {
 		bar = value.toString()
 	}
 }

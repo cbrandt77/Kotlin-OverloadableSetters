@@ -14,32 +14,34 @@ import org.jetbrains.kotlin.fir.resolve.diagnostics.ConeAmbiguityError
 import org.jetbrains.kotlin.fir.resolve.diagnostics.ConeDiagnosticWithSingleCandidate
 import org.jetbrains.kotlin.fir.resolve.diagnostics.ConeUnresolvedNameError
 import org.jetbrains.kotlin.name.Name
-
+//TODO do I even need this? it should link automatically, and just say "no function `set-bar` found"
 object FirOverloadedSetterAssignmentUsageChecker : FirFunctionCallChecker(MppCheckerKind.Common) {
+	
 	context(ctx: CheckerContext, reporter: DiagnosticReporter)
 	override fun check(expression: FirFunctionCall) {
 		if (!expression.couldBeOverloadedSetterCall())
 			return;
 		
-		val referencedProperty = getPropertyNameFromSetterName(expression.calleeReference.name) ?: return
-		expression.getErrorName()?.let {
-			getPropertyNameFromSetterName(it)
-		}
+		val referencedPropertyName = expression.getErrorPropertyName()
+		
+		
 	}
 	
 	private fun FirFunctionCall.couldBeOverloadedSetterCall(): Boolean {
 		return source?.kind === KtFakeSourceElementKind.AssignmentPluginAltered && this.arguments.size == 1
 	}
 	
-	private fun FirFunctionCall.getErrorName(): Name? {
+	private fun FirFunctionCall.getErrorPropertyName(): String? {
 		if (!this.calleeReference.isError())
 			return null;
 		
-		return when (val diagnostic = (this.calleeReference as FirDiagnosticHolder).diagnostic) {
+		val calleeName = when (val diagnostic = (this.calleeReference as FirDiagnosticHolder).diagnostic) {
 			is ConeAmbiguityError -> diagnostic.name
 			is ConeDiagnosticWithSingleCandidate -> diagnostic.candidate.callInfo.name
 			is ConeUnresolvedNameError -> diagnostic.name
 			else -> calleeReference.name
 		}
+		
+		return getPropertyNameFromSetterName(calleeName)
 	}
 }

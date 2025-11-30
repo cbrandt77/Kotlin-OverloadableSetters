@@ -2,40 +2,49 @@ package cb77.lang.plugins.kt.overloadablesetters.fir.diagnostics
 
 import org.jetbrains.kotlin.diagnostics.KtDiagnosticFactoryToRendererMap
 import org.jetbrains.kotlin.diagnostics.rendering.BaseDiagnosticRendererFactory
-import org.jetbrains.kotlin.diagnostics.rendering.CommonRenderers.STRING
 import org.jetbrains.kotlin.fir.analysis.diagnostics.FirDiagnosticRenderers
-import org.jetbrains.kotlin.fir.analysis.diagnostics.FirDiagnosticRenderers.RENDER_COLLECTION_OF_TYPES
 import org.jetbrains.kotlin.fir.analysis.diagnostics.FirDiagnosticRenderers.RENDER_TYPE
 
-object FirOverloadedSetterDefaultMessages : BaseDiagnosticRendererFactory() {
+object FirOverloadableSetters_ErrorMessages : BaseDiagnosticRendererFactory() {
 	override val MAP by KtDiagnosticFactoryToRendererMap("FIRSetterOverloading") { map ->
 		with (map) {
 			put(
-					FirOverloadedSetterErrors.SETTER_DECL_MUST_HAVE_SINGLE_PARAM,
+					FirOverloadableSetters_ErrorTypes.SETTER_DECL_MUST_HAVE_SINGLE_PARAM,
 					"Property setters must have exactly one parameter."
 			)
 			
 			put(
-					FirOverloadedSetterErrors.SETTER_DECL_MUST_RETURN_UNIT,
+					FirOverloadableSetters_ErrorTypes.SETTER_DECL_MUST_RETURN_UNIT,
 					"Property setters must return Unit."
 			)
 			
 			put(
-					FirOverloadedSetterErrors.SETTER_DECL_PARAMETER_SHADOWS_PROPERTY_TYPE,
+					FirOverloadableSetters_ErrorTypes.SETTER_DECL_PARAMETER_SHADOWS_PROPERTY_TYPE,
 					"Overloaded setter parameter type ''{0}'' shadows the type of the property ''{1}''.",
 					RENDER_TYPE,
 					RENDER_TYPE
 			)
 			
 			put(
-				FirOverloadedSetterErrors.SETTER_ANNOTATED_PROP_NOT_MUTABLE,
-				"A 'val' property cannot have a setter.",
+					FirOverloadableSetters_ErrorTypes.SETTER_ANNOTATED_PROP_NOT_MUTABLE,
+					"A 'val' property cannot have a setter.",
 			)
 			
 			put(
-					FirOverloadedSetterErrors.SETTER_DECL_TARGET_PROPERTY_NOT_VISIBLE,
+					FirOverloadableSetters_ErrorTypes.SETTER_DECL_TARGET_PROPERTY_NOT_VISIBLE,
 					"Setter target ''{0}'' is not visible in this scope.",
 					FirDiagnosticRenderers.SYMBOL_WITH_CONTAINING_DECLARATION
+			)
+			
+			put(
+					FirOverloadableSetters_ErrorTypes.SETTER_DECL_MUST_NOT_HAVE_TYPE_PARAMS,
+					"Property setters do not support type parameters."
+			)
+			
+			put(
+					FirOverloadableSetters_ErrorTypes.SETTER_DECL_MUST_NOT_HAVE_CONTEXT_PARAMS,
+					"Property setters do not support context parameters. " +
+					"This may change in the future."
 			)
 		}
 	}

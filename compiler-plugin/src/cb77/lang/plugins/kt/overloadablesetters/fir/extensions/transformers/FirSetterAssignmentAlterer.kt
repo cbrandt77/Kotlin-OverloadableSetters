@@ -1,4 +1,4 @@
-package cb77.lang.plugins.kt.overloadablesetters.fir.extensions
+package cb77.lang.plugins.kt.overloadablesetters.fir.extensions.transformers
 
 import cb77.lang.plugins.kt.overloadablesetters.util.makeSetterName
 import cb77.lang.plugins.kt.overloadablesetters.util.supportsCustomSetters
@@ -10,7 +10,6 @@ import org.jetbrains.kotlin.fir.expressions.FirFunctionCallOrigin
 import org.jetbrains.kotlin.fir.expressions.FirStatement
 import org.jetbrains.kotlin.fir.expressions.FirVariableAssignment
 import org.jetbrains.kotlin.fir.expressions.buildUnaryArgumentList
-import org.jetbrains.kotlin.fir.expressions.builder.buildFunctionCall
 import org.jetbrains.kotlin.fir.expressions.calleeReference
 import org.jetbrains.kotlin.fir.expressions.dispatchReceiver
 import org.jetbrains.kotlin.fir.extensions.FirAssignExpressionAltererExtension
@@ -24,7 +23,7 @@ import org.jetbrains.kotlin.name.Name
  * - Replaces all expressions `foo.bar = baz` with `foo.setBar(baz)`
  */
 @OptIn(DirectDeclarationsAccess::class)
-class AssignmentTransformer(session: FirSession) : FirAssignExpressionAltererExtension(session) {
+class FirSetterAssignmentAlterer(session: FirSession) : FirAssignExpressionAltererExtension(session) {
 	/**
 	 * Only transforms class or extension properties that are mutable and annotated with [HasCustomSetters]
 	 */
@@ -43,7 +42,7 @@ class AssignmentTransformer(session: FirSession) : FirAssignExpressionAltererExt
 		
 		val setterName = Name.identifier(makeSetterName(targetProperty))
 		
-		return buildFunctionCall {
+		return org.jetbrains.kotlin.fir.expressions.builder.buildFunctionCall {
 			source = variableAssignment.source?.fakeElement(KtFakeSourceElementKind.AssignmentPluginAltered)
 			explicitReceiver = variableAssignment.dispatchReceiver
 			argumentList = buildUnaryArgumentList(rightArgument)
@@ -55,4 +54,3 @@ class AssignmentTransformer(session: FirSession) : FirAssignExpressionAltererExt
 		}
 	}
 }
-

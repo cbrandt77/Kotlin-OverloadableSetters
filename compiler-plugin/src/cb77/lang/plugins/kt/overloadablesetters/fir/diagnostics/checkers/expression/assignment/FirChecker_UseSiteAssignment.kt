@@ -1,4 +1,4 @@
-package cb77.lang.plugins.kt.overloadablesetters.fir.diagnostics
+package cb77.lang.plugins.kt.overloadablesetters.fir.diagnostics.checkers.expression.assignment
 
 import cb77.lang.plugins.kt.overloadablesetters.util.getPropertyNameFromSetterName
 import org.jetbrains.kotlin.KtFakeSourceElementKind
@@ -13,10 +13,9 @@ import org.jetbrains.kotlin.fir.references.isError
 import org.jetbrains.kotlin.fir.resolve.diagnostics.ConeAmbiguityError
 import org.jetbrains.kotlin.fir.resolve.diagnostics.ConeDiagnosticWithSingleCandidate
 import org.jetbrains.kotlin.fir.resolve.diagnostics.ConeUnresolvedNameError
-import org.jetbrains.kotlin.name.Name
+
 //TODO do I even need this? it should link automatically, and just say "no function `set-bar` found"
-object FirOverloadedSetterAssignmentUsageChecker : FirFunctionCallChecker(MppCheckerKind.Common) {
-	
+object FirChecker_UseSiteAssignment : FirFunctionCallChecker(MppCheckerKind.Common) {
 	context(ctx: CheckerContext, reporter: DiagnosticReporter)
 	override fun check(expression: FirFunctionCall) {
 		if (!expression.couldBeOverloadedSetterCall())

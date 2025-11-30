@@ -1,27 +1,21 @@
 package cb77.lang.plugins.kt.overloadablesetters.fir.diagnostics
 
-import org.jetbrains.annotations.ApiStatus
-import org.jetbrains.kotlin.descriptors.Visibility
 import org.jetbrains.kotlin.diagnostics.KtDiagnosticsContainer
 import org.jetbrains.kotlin.diagnostics.SourceElementPositioningStrategies
 import org.jetbrains.kotlin.diagnostics.error0
 import org.jetbrains.kotlin.diagnostics.error1
 import org.jetbrains.kotlin.diagnostics.error2
-import org.jetbrains.kotlin.diagnostics.error3
 import org.jetbrains.kotlin.diagnostics.warning1
-import org.jetbrains.kotlin.fir.symbols.impl.FirClassSymbol
 import org.jetbrains.kotlin.fir.symbols.impl.FirPropertySymbol
 import org.jetbrains.kotlin.fir.types.ConeKotlinType
 import org.jetbrains.kotlin.psi.KtContextReceiverList
-import org.jetbrains.kotlin.psi.KtElement
 import org.jetbrains.kotlin.psi.KtNamedFunction
 import org.jetbrains.kotlin.psi.KtParameter
 import org.jetbrains.kotlin.psi.KtProperty
 import org.jetbrains.kotlin.psi.KtTypeArgumentList
-import org.jetbrains.kotlin.psi.stubs.elements.KtContextReceiverElementType
 
 
-object FirOverloadedSetterErrors : KtDiagnosticsContainer() {
+object FirOverloadableSetters_ErrorTypes : KtDiagnosticsContainer() {
 	//region Setter Function Declarations
 	
 	// WARNINGS: (Applies to everything)
@@ -130,6 +124,6 @@ object FirOverloadedSetterErrors : KtDiagnosticsContainer() {
 	//endregion Property Declaration
 	
 	
-	override fun getRendererFactory() = FirOverloadedSetterDefaultMessages
+	override fun getRendererFactory() = FirOverloadableSetters_ErrorMessages
 }
 

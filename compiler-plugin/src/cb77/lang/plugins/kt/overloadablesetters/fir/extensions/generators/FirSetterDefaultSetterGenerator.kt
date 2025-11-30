@@ -1,4 +1,4 @@
-package cb77.lang.plugins.kt.overloadablesetters.fir.extensions
+package cb77.lang.plugins.kt.overloadablesetters.fir.extensions.generators
 
 import cb77.lang.plugins.kt.overloadablesetters.util.getDeclaredAndInheritedCallables
 import cb77.lang.plugins.kt.overloadablesetters.util.makeSetterName
@@ -52,10 +52,11 @@ import org.jetbrains.kotlin.utils.addToStdlib.runIf
 import org.jetbrains.kotlin.utils.mapToSetOrEmpty
 
 /**
- * Adds a `set{PropName}` function with the property's original type to the class,
- * so we can blindly remap `foo.bar = baz` to `foo.setBar(baz)`
+ * Adds a `set-{propName}` function with the property's original type to the class,
+ * so we can blindly remap `foo.bar = baz` to `foo.set-bar(baz)`
  */
-class FirDefaultSetterGenerator(session: FirSession) : FirDeclarationGenerationExtension(session) {
+class DefaultSetterMaker(session: FirSession) : FirDeclarationGenerationExtension(session) {
+	
 	object OverloadableSettersDeclarationKey : GeneratedDeclarationKey()
 	
 	/**
@@ -72,7 +73,7 @@ class FirDefaultSetterGenerator(session: FirSession) : FirDeclarationGenerationE
 	 *
 	 * The map is because we can't just do the functions, we have to first say what the names of the functions we want to emit are and THEN do the functions, which necessitates two lookups per property.
 	 */
-	private val intermediatePropertiesCache: FirCache<FirClassSymbol<*>, Map<Name, FirPropertySymbol>, Nothing?> = session.firCachesFactory.createCache { owningClass, _ ->
+	private val annotatedPropertiesByClass: FirCache<FirClassSymbol<*>, Map<Name, FirPropertySymbol>, Nothing?> = session.firCachesFactory.createCache { owningClass, _ ->
 		calledFromCache.set(true)
 		
 		owningClass.getDeclaredAndInheritedCallables(session, FirResolvePhase.SUPER_TYPES)
@@ -95,7 +96,7 @@ class FirDefaultSetterGenerator(session: FirSession) : FirDeclarationGenerationE
 			return emptySet()
 		
 		val owningClass = context.owner
-		return intermediatePropertiesCache.getValue(owningClass)
+		return annotatedPropertiesByClass.getValue(owningClass)
 										  .values
 										  .mapToSetOrEmpty { Name.identifier(makeSetterName(it.name)) }
 	}
@@ -103,7 +104,7 @@ class FirDefaultSetterGenerator(session: FirSession) : FirDeclarationGenerationE
 	// thankfully the `getCallableNames` method doesn't have to be side-effect-free
 	override fun generateFunctions(callableId: CallableId, context: MemberGenerationContext?): List<FirNamedFunctionSymbol> {
 		val owningClass = context?.owner ?: return emptyList()
-		val propertyForSetter = intermediatePropertiesCache.getValue(owningClass)[callableId.callableName]
+		val propertyForSetter = annotatedPropertiesByClass.getValue(owningClass)[callableId.callableName]
 		                        ?: throw IllegalArgumentException("No property found in class $owningClass for name ${callableId.callableName}")
 		
 		return listOf(makeDefaultSetterStub(owningClass, propertyForSetter, callableId.callableName).symbol)

@@ -1,17 +1,17 @@
 package cb77.lang.plugins.kt.overloadablesetters.fir
 
-import cb77.lang.plugins.kt.overloadablesetters.fir.extensions.AssignmentTransformer
-import cb77.lang.plugins.kt.overloadablesetters.fir.diagnostics.FirOverloadedSetterErrors
-import cb77.lang.plugins.kt.overloadablesetters.fir.extensions.FirDefaultSetterGenerator
+import cb77.lang.plugins.kt.overloadablesetters.fir.extensions.transformers.FirSetterAssignmentAlterer
+import cb77.lang.plugins.kt.overloadablesetters.fir.diagnostics.FirOverloadableSetters_ErrorTypes
+import cb77.lang.plugins.kt.overloadablesetters.fir.extensions.generators.DefaultSetterMaker
 import org.jetbrains.kotlin.fir.extensions.FirExtensionRegistrar
 
 class FirRegistrar_OverloadableSetters(private val annotations: Collection<String>) : FirExtensionRegistrar() {
 	override fun ExtensionRegistrarContext.configurePlugin() {
 		+FirSetterOverloadFinderService.getFactory(annotations)
-		+::AssignmentTransformer
-		+::FirDefaultSetterGenerator
+		+::FirSetterAssignmentAlterer
+		+::DefaultSetterMaker
 		+::FirOverloadableSettersCheckersExtension
 		
-		registerDiagnosticContainers(FirOverloadedSetterErrors)
+		registerDiagnosticContainers(FirOverloadableSetters_ErrorTypes)
 	}
 }

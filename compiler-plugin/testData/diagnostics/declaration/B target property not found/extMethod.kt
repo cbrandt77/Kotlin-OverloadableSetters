@@ -1,4 +1,4 @@
-// RUN_PIPELINE_TILL: BACKEND
+// RUN_PIPELINE_TILL: FRONTEND
 
 // MODULE: lib
 // FILE: HasCustomSetters.kt

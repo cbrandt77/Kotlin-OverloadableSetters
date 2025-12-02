@@ -78,7 +78,7 @@ object FirOverloadableSetters_ErrorTypes : KtDiagnosticsContainer() {
 	 * I feel like they could potentially be supported by the language, but then how would you actually implement that in a standard property setter?
 	 * Pretty sure it would work if you could directly invoke the method, but with Kotlin's hidden backing methods, that won't work.
 	 */
-	val SETTER_DECL_MUST_HAVE_SINGLE_PARAM by error0<KtNamedFunction>(SourceElementPositioningStrategies.DECLARATION_SIGNATURE_OR_DEFAULT)
+	val SETTER_DECL_MUST_HAVE_SINGLE_PARAM by error0<KtNamedFunction>(SourceElementPositioningStrategies.PARAMETERS_WITH_DEFAULT_VALUE)
 	
 	/**
 	 * A setter function's input parameter is the same as the property it's setting, so it would "shadow" it.

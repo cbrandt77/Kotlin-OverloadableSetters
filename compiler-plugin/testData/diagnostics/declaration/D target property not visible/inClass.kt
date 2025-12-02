@@ -21,16 +21,3 @@ class MyClass : MySuperClass() {
 		someProperty = value.toString()
 	}
 }
-
-
-// MODULE: main(lib)
-// FILE: bar.kt
-package bar;
-
-import foo.MyClass
-
-fun test() {
-	val x = MyClass()
-	x.someProperty = "a string"
-	x.someProperty = 2
-}

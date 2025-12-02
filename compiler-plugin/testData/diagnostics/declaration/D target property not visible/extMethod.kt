@@ -1,6 +1,6 @@
 // RUN_PIPELINE_TILL: FRONTEND
 
-// MODULE: lib
+// MODULE: main
 // FILE: HasCustomSetters.kt
 package annotations;
 annotation class HasCustomSetters
@@ -16,21 +16,10 @@ class MyClass {
 }
 
 // FILE: MyExtensions.kt
+package extensions
 
 import foo.MyClass
 
 fun MyClass.<!SETTER_DECL_TARGET_PROPERTY_NOT_VISIBLE!>`set-someProperty`<!>(value: Int) {
 	someProperty = value.toString()
-}
-
-// MODULE: main(lib)
-// FILE: bar.kt
-package bar;
-
-import foo.MyClass
-
-fun test() {
-	val x = MyClass()
-	x.someProperty = "a string"
-	x.someProperty = 2
 }

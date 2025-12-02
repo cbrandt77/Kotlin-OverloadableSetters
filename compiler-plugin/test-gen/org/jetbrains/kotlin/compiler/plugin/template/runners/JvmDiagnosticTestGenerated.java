@@ -146,6 +146,22 @@ public class JvmDiagnosticTestGenerated extends AbstractJvmDiagnosticTest {
         runTest("compiler-plugin/testData/diagnostics/declaration/E cannot widen visibility/inClass.kt");
       }
     }
+
+    @Nested
+    @TestMetadata("compiler-plugin/testData/diagnostics/declaration/F must have single param")
+    @TestDataPath("$PROJECT_ROOT")
+    public class F_must_have_single_param {
+      @Test
+      public void testAllFilesPresentInF_must_have_single_param() {
+        KtTestUtil.assertAllTestsPresentByMetadataWithExcluded(this.getClass(), new File("compiler-plugin/testData/diagnostics/declaration/F must have single param"), Pattern.compile("^(.+)\\.kt$"), Pattern.compile("^(.+)\\.fir\\.kts?$"), TargetBackend.JVM_IR, true);
+      }
+
+      @Test
+      @TestMetadata("must_have_single_param.kt")
+      public void testMust_have_single_param() {
+        runTest("compiler-plugin/testData/diagnostics/declaration/F must have single param/must_have_single_param.kt");
+      }
+    }
   }
 
   @Nested

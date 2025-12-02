@@ -1,31 +1,65 @@
-# Kotlin Compiler Plugin template
+# Overloadable Setters for Kotlin
 
-This is a template project for writing a compiler plugin for the Kotlin compiler.
+Give properties multiple setters!  Define multiple ways to set a field, and invoke them with standard property syntax!
 
-## Details
+Overloaded setters will be resolved like standard property setters:
+```kotlin
+// MyClass.kt
+class MyClass {
+    // On an annotated property:
+    @HasCustomSetters
+    var foo: () -> String = { "" }
 
-This project has three modules:
-- The [`:compiler-plugin`](compiler-plugin/src) module contains the compiler plugin itself.
-- The [`:plugin-annotations`](plugin-annotations/src/commonMain/kotlin) module contains annotations which can be used in
-user code for interacting with compiler plugin.
-- The [`:gradle-plugin`](gradle-plugin/src) module contains a simple Gradle plugin to add the compiler plugin and
-annotation dependency to a Kotlin project. 
+    // Both in-class methods...
+    fun `set-foo`(value: String) {
+        foo = { value }
+    }
+}
+// ...and extension methods...
+fun MyClass.`set-foo`(value: Int) {
+    foo = value.toString() // delegates to the above `set-foo`
+}
 
-Extension point registration:
-- K2 Frontend (FIR) extensions can be registered in `SimplePluginRegistrar`.
-- All other extensions (including K1 frontend and backend) can be registered in `SimplePluginComponentRegistrar`.
+// ...can be invoked with standard property syntax:
+fun main() {
+    val inst = MyClass()
 
-## Tests
+    // vanilla property set
+    inst.foo = { "a deferred string" }
+    assert(inst.foo() == "a deferred string")
 
-The [Kotlin compiler test framework][test-framework] is set up for this project.
-To create a new test, add a new `.kt` file in a [compiler-plugin/testData](compiler-plugin/testData) sub-directory:
-`testData/box` for codegen tests and `testData/diagnostics` for diagnostics tests.
-The generated JUnit 5 test classes will be updated automatically when tests are next run.
-They can be manually updated with the `generateTests` Gradle task as well.
-To aid in running tests, it is recommended to install the [Kotlin Compiler DevKit][test-plugin] IntelliJ plugin,
-which is pre-configured in this repository.
+    // invokes in-class method `MyClass#set-foo(String)`
+    inst.foo = "a string literal"
+    assert(inst.foo() == "a string literal")
 
-[//]: # (Links)
+    // invokes extension method `MyClass.set-foo(Int)`
+    inst.foo = 0
+    assert(inst.foo() == "0")
+}
+```
 
-[test-framework]: https://github.com/JetBrains/kotlin/blob/master/compiler/test-infrastructure/ReadMe.md
-[test-plugin]: https://github.com/JetBrains/kotlin-compiler-devkit
+This is primarily useful for builders:
+```kotlin
+myBuilder { 
+    defaultValue = "a literal string"
+    defaultValue = 0
+    defaultValue = { someExpensiveComputation() }
+}
+```
+
+## Installation
+
+<!-- TODO -->
+### Gradle
+
+
+
+### Enable Diagnostics
+
+To see diagnostics directly in IntelliJ IDEA:
+- Enable K2 Mode for the Kotlin IntelliJ plugin.
+- Open the Registry
+- Set the `kotlin.k2.only.bundled.compiler.plugins.enabled` entry to `false`.
+
+
+

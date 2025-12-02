@@ -41,11 +41,11 @@ buildConfig {
 
 gradlePlugin {
     plugins {
-        create("SimplePlugin") {
+        create("OverloadableSettersPlugin") {
             id = rootProject.group.toString()
-            displayName = "SimplePlugin"
-            description = "SimplePlugin"
-            implementationClass = "org.jetbrains.kotlin.compiler.plugin.template.SimpleGradlePlugin"
+            displayName = "OverloadableSettersPlugin"
+            description = "Add custom setters for your Kotlin properties with different types, like setting a String field with an Int or a Char."
+            implementationClass = "cb77.lang.plugins.kt.overloadablesetters.gradle.OverloadableSettersGradlePlugin"
         }
     }
 }

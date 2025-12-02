@@ -1,4 +1,4 @@
-// RUN_PIPELINE_TILL: FRONTEND
+// RUN_PIPELINE_TILL: BACKEND
 
 // MODULE: lib
 // FILE: HasCustomSetters.kt
@@ -16,6 +16,7 @@ class MyClass {
 }
 
 // FILE: MyExtensions.kt
+package ext
 
 import foo.MyClass
 
@@ -28,6 +29,7 @@ fun MyClass.`set-someProperty`(value: Int) {
 package bar;
 
 import foo.MyClass
+import ext.`set-someProperty`
 
 fun test() {
 	val x = MyClass()

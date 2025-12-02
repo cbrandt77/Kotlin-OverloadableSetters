@@ -1,9 +1,13 @@
 package cb77.lang.plugins.kt.overloadablesetters.fir.diagnostics
 
 import org.jetbrains.kotlin.diagnostics.KtDiagnosticFactoryToRendererMap
+import org.jetbrains.kotlin.diagnostics.KtDiagnosticRenderers.TO_STRING
+import org.jetbrains.kotlin.diagnostics.KtDiagnosticRenderers.VISIBILITY
 import org.jetbrains.kotlin.diagnostics.rendering.BaseDiagnosticRendererFactory
 import org.jetbrains.kotlin.fir.analysis.diagnostics.FirDiagnosticRenderers
+import org.jetbrains.kotlin.fir.analysis.diagnostics.FirDiagnosticRenderers.DECLARATION_NAME
 import org.jetbrains.kotlin.fir.analysis.diagnostics.FirDiagnosticRenderers.RENDER_TYPE
+import org.jetbrains.kotlin.fir.analysis.diagnostics.FirErrors.CANNOT_WEAKEN_ACCESS_PRIVILEGE
 
 object FirOverloadableSetters_ErrorMessages : BaseDiagnosticRendererFactory() {
 	override val MAP by KtDiagnosticFactoryToRendererMap("FIRSetterOverloading") { map ->
@@ -45,6 +49,14 @@ object FirOverloadableSetters_ErrorMessages : BaseDiagnosticRendererFactory() {
 					FirOverloadableSetters_ErrorTypes.SETTER_DECL_MUST_NOT_HAVE_CONTEXT_PARAMS,
 					"Property setters do not support context parameters. " +
 					"This may change in the future."
+			)
+			
+			put(
+					FirOverloadableSetters_ErrorTypes.SETTER_DECL_CANNOT_WIDEN_VISIBILITY,
+					"Cannot weaken access privilege {0} for ''{1}'' in ''{2}''.",
+					VISIBILITY,
+					DECLARATION_NAME,
+					TO_STRING
 			)
 		}
 	}

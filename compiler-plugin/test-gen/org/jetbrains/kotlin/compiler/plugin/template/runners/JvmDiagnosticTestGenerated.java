@@ -19,7 +19,7 @@ import java.util.regex.Pattern;
 public class JvmDiagnosticTestGenerated extends AbstractJvmDiagnosticTest {
   @Test
   public void testAllFilesPresentInDiagnostics() {
-    KtTestUtil.assertAllTestsPresentByMetadataWithExcluded(this.getClass(), new File("compiler-plugin/testData/diagnostics"), Pattern.compile("^(.+)\\.kt$"), null, TargetBackend.JVM_IR, true);
+    KtTestUtil.assertAllTestsPresentByMetadataWithExcluded(this.getClass(), new File("compiler-plugin/testData/diagnostics"), Pattern.compile("^(.+)\\.kt$"), Pattern.compile("^(.+)\\.fir\\.kts?$"), TargetBackend.JVM_IR, true);
   }
 
   @Test
@@ -34,7 +34,7 @@ public class JvmDiagnosticTestGenerated extends AbstractJvmDiagnosticTest {
   public class Declaration {
     @Test
     public void testAllFilesPresentInDeclaration() {
-      KtTestUtil.assertAllTestsPresentByMetadataWithExcluded(this.getClass(), new File("compiler-plugin/testData/diagnostics/declaration"), Pattern.compile("^(.+)\\.kt$"), null, TargetBackend.JVM_IR, true);
+      KtTestUtil.assertAllTestsPresentByMetadataWithExcluded(this.getClass(), new File("compiler-plugin/testData/diagnostics/declaration"), Pattern.compile("^(.+)\\.kt$"), Pattern.compile("^(.+)\\.fir\\.kts?$"), TargetBackend.JVM_IR, true);
     }
 
     @Nested
@@ -43,7 +43,7 @@ public class JvmDiagnosticTestGenerated extends AbstractJvmDiagnosticTest {
     public class A_no_error {
       @Test
       public void testAllFilesPresentInA_no_error() {
-        KtTestUtil.assertAllTestsPresentByMetadataWithExcluded(this.getClass(), new File("compiler-plugin/testData/diagnostics/declaration/A no error"), Pattern.compile("^(.+)\\.kt$"), null, TargetBackend.JVM_IR, true);
+        KtTestUtil.assertAllTestsPresentByMetadataWithExcluded(this.getClass(), new File("compiler-plugin/testData/diagnostics/declaration/A no error"), Pattern.compile("^(.+)\\.kt$"), Pattern.compile("^(.+)\\.fir\\.kts?$"), TargetBackend.JVM_IR, true);
       }
 
       @Test
@@ -65,7 +65,7 @@ public class JvmDiagnosticTestGenerated extends AbstractJvmDiagnosticTest {
     public class B_target_property_not_found {
       @Test
       public void testAllFilesPresentInB_target_property_not_found() {
-        KtTestUtil.assertAllTestsPresentByMetadataWithExcluded(this.getClass(), new File("compiler-plugin/testData/diagnostics/declaration/B target property not found"), Pattern.compile("^(.+)\\.kt$"), null, TargetBackend.JVM_IR, true);
+        KtTestUtil.assertAllTestsPresentByMetadataWithExcluded(this.getClass(), new File("compiler-plugin/testData/diagnostics/declaration/B target property not found"), Pattern.compile("^(.+)\\.kt$"), Pattern.compile("^(.+)\\.fir\\.kts?$"), TargetBackend.JVM_IR, true);
       }
 
       @Test
@@ -87,7 +87,7 @@ public class JvmDiagnosticTestGenerated extends AbstractJvmDiagnosticTest {
     public class C_target_property_unsupported {
       @Test
       public void testAllFilesPresentInC_target_property_unsupported() {
-        KtTestUtil.assertAllTestsPresentByMetadataWithExcluded(this.getClass(), new File("compiler-plugin/testData/diagnostics/declaration/C target property unsupported"), Pattern.compile("^(.+)\\.kt$"), null, TargetBackend.JVM_IR, true);
+        KtTestUtil.assertAllTestsPresentByMetadataWithExcluded(this.getClass(), new File("compiler-plugin/testData/diagnostics/declaration/C target property unsupported"), Pattern.compile("^(.+)\\.kt$"), Pattern.compile("^(.+)\\.fir\\.kts?$"), TargetBackend.JVM_IR, true);
       }
 
       @Test
@@ -109,7 +109,7 @@ public class JvmDiagnosticTestGenerated extends AbstractJvmDiagnosticTest {
     public class D_target_property_not_visible {
       @Test
       public void testAllFilesPresentInD_target_property_not_visible() {
-        KtTestUtil.assertAllTestsPresentByMetadataWithExcluded(this.getClass(), new File("compiler-plugin/testData/diagnostics/declaration/D target property not visible"), Pattern.compile("^(.+)\\.kt$"), null, TargetBackend.JVM_IR, true);
+        KtTestUtil.assertAllTestsPresentByMetadataWithExcluded(this.getClass(), new File("compiler-plugin/testData/diagnostics/declaration/D target property not visible"), Pattern.compile("^(.+)\\.kt$"), Pattern.compile("^(.+)\\.fir\\.kts?$"), TargetBackend.JVM_IR, true);
       }
 
       @Test
@@ -131,7 +131,7 @@ public class JvmDiagnosticTestGenerated extends AbstractJvmDiagnosticTest {
     public class E_cannot_widen_visibility {
       @Test
       public void testAllFilesPresentInE_cannot_widen_visibility() {
-        KtTestUtil.assertAllTestsPresentByMetadataWithExcluded(this.getClass(), new File("compiler-plugin/testData/diagnostics/declaration/E cannot widen visibility"), Pattern.compile("^(.+)\\.kt$"), null, TargetBackend.JVM_IR, true);
+        KtTestUtil.assertAllTestsPresentByMetadataWithExcluded(this.getClass(), new File("compiler-plugin/testData/diagnostics/declaration/E cannot widen visibility"), Pattern.compile("^(.+)\\.kt$"), Pattern.compile("^(.+)\\.fir\\.kts?$"), TargetBackend.JVM_IR, true);
       }
 
       @Test
@@ -154,7 +154,7 @@ public class JvmDiagnosticTestGenerated extends AbstractJvmDiagnosticTest {
   public class Workshop {
     @Test
     public void testAllFilesPresentInWorkshop() {
-      KtTestUtil.assertAllTestsPresentByMetadataWithExcluded(this.getClass(), new File("compiler-plugin/testData/diagnostics/workshop"), Pattern.compile("^(.+)\\.kt$"), null, TargetBackend.JVM_IR, true);
+      KtTestUtil.assertAllTestsPresentByMetadataWithExcluded(this.getClass(), new File("compiler-plugin/testData/diagnostics/workshop"), Pattern.compile("^(.+)\\.kt$"), Pattern.compile("^(.+)\\.fir\\.kts?$"), TargetBackend.JVM_IR, true);
     }
 
     @Test

@@ -61,8 +61,7 @@ object FirChecker_SetterFunctionLinter : FirFunctionChecker(MppCheckerKind.Commo
 				reporter.reportOn(declaration.source, FirOverloadableSetters_ErrorTypes.SETTER_DECL_TARGET_PROPERTY_NOT_VISIBLE, referencedProperty)
 			}
 			declaration.visibility > referencedProperty.visibility -> {
-				/** @see FirOverloadableSetters_ErrorTypes.SETTER_DECL_CANNOT_WIDEN_VISIBILITY */
-				reporter.reportOn(declaration.source, FirErrors.CANNOT_WEAKEN_ACCESS_PRIVILEGE, referencedProperty.visibility, referencedProperty, owningClass.name)
+				reporter.reportOn(declaration.source, FirOverloadableSetters_ErrorTypes.SETTER_DECL_CANNOT_WIDEN_VISIBILITY, referencedProperty.visibility, referencedProperty, owningClass.name)
 			}
 		}
 		

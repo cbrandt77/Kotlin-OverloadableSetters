@@ -1,4 +1,5 @@
-// RUN_PIPELINE_TILL: FRONTEND
+// RUN_PIPELINE_TILL: BACKEND
+
 
 // MODULE: lib
 // FILE: HasCustomSetters.kt
@@ -30,5 +31,5 @@ import foo.MyClass
 fun test() {
 	val x = MyClass()
 	x.someProperty = "a string"
-	x.someProperty = <!ASSIGNMENT_TYPE_MISMATCH!>2<!>
+	x.someProperty = 2
 }

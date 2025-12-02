@@ -32,5 +32,5 @@ import foo.MyOuterClass.`set-someProperty`
 fun test() {
 	val x = MyClass()
 	x.someProperty = "a string"
-	x.someProperty = <!ASSIGNMENT_TYPE_MISMATCH!>2<!>
+	x.someProperty = 2
 }

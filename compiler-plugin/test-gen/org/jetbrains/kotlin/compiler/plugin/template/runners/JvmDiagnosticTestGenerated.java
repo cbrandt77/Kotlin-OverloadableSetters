@@ -162,6 +162,70 @@ public class JvmDiagnosticTestGenerated extends AbstractJvmDiagnosticTest {
         runTest("compiler-plugin/testData/diagnostics/declaration/F must have single param/must_have_single_param.kt");
       }
     }
+
+    @Nested
+    @TestMetadata("compiler-plugin/testData/diagnostics/declaration/G parameter shadows property type")
+    @TestDataPath("$PROJECT_ROOT")
+    public class G_parameter_shadows_property_type {
+      @Test
+      public void testAllFilesPresentInG_parameter_shadows_property_type() {
+        KtTestUtil.assertAllTestsPresentByMetadataWithExcluded(this.getClass(), new File("compiler-plugin/testData/diagnostics/declaration/G parameter shadows property type"), Pattern.compile("^(.+)\\.kt$"), Pattern.compile("^(.+)\\.fir\\.kts?$"), TargetBackend.JVM_IR, true);
+      }
+
+      @Test
+      @TestMetadata("test.kt")
+      public void testTest() {
+        runTest("compiler-plugin/testData/diagnostics/declaration/G parameter shadows property type/test.kt");
+      }
+    }
+
+    @Nested
+    @TestMetadata("compiler-plugin/testData/diagnostics/declaration/H must not have type params")
+    @TestDataPath("$PROJECT_ROOT")
+    public class H_must_not_have_type_params {
+      @Test
+      public void testAllFilesPresentInH_must_not_have_type_params() {
+        KtTestUtil.assertAllTestsPresentByMetadataWithExcluded(this.getClass(), new File("compiler-plugin/testData/diagnostics/declaration/H must not have type params"), Pattern.compile("^(.+)\\.kt$"), Pattern.compile("^(.+)\\.fir\\.kts?$"), TargetBackend.JVM_IR, true);
+      }
+
+      @Test
+      @TestMetadata("test.kt")
+      public void testTest() {
+        runTest("compiler-plugin/testData/diagnostics/declaration/H must not have type params/test.kt");
+      }
+    }
+
+    @Nested
+    @TestMetadata("compiler-plugin/testData/diagnostics/declaration/I must not have context params")
+    @TestDataPath("$PROJECT_ROOT")
+    public class I_must_not_have_context_params {
+      @Test
+      public void testAllFilesPresentInI_must_not_have_context_params() {
+        KtTestUtil.assertAllTestsPresentByMetadataWithExcluded(this.getClass(), new File("compiler-plugin/testData/diagnostics/declaration/I must not have context params"), Pattern.compile("^(.+)\\.kt$"), Pattern.compile("^(.+)\\.fir\\.kts?$"), TargetBackend.JVM_IR, true);
+      }
+
+      @Test
+      @TestMetadata("test.kt")
+      public void testTest() {
+        runTest("compiler-plugin/testData/diagnostics/declaration/I must not have context params/test.kt");
+      }
+    }
+
+    @Nested
+    @TestMetadata("compiler-plugin/testData/diagnostics/declaration/J must return unit")
+    @TestDataPath("$PROJECT_ROOT")
+    public class J_must_return_unit {
+      @Test
+      public void testAllFilesPresentInJ_must_return_unit() {
+        KtTestUtil.assertAllTestsPresentByMetadataWithExcluded(this.getClass(), new File("compiler-plugin/testData/diagnostics/declaration/J must return unit"), Pattern.compile("^(.+)\\.kt$"), Pattern.compile("^(.+)\\.fir\\.kts?$"), TargetBackend.JVM_IR, true);
+      }
+
+      @Test
+      @TestMetadata("test.kt")
+      public void testTest() {
+        runTest("compiler-plugin/testData/diagnostics/declaration/J must return unit/test.kt");
+      }
+    }
   }
 
   @Nested

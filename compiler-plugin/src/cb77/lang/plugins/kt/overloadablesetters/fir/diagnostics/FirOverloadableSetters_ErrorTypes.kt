@@ -97,7 +97,7 @@ object FirOverloadableSetters_ErrorTypes : KtDiagnosticsContainer() {
 	 * I feel like implied generics _could_ work, but how on earth would you forcibly disambiguate those??
 	 * I don't want to deal with that, so we're not supporting it.
 	 */
-	val SETTER_DECL_MUST_NOT_HAVE_TYPE_PARAMS by error0<KtTypeArgumentList>(SourceElementPositioningStrategies.DECLARATION_SIGNATURE_OR_DEFAULT)
+	val SETTER_DECL_MUST_NOT_HAVE_TYPE_PARAMS by error0<KtTypeArgumentList>(SourceElementPositioningStrategies.TYPE_PARAMETERS_LIST)
 	
 	/**
 	 * A setter function has context parameters.

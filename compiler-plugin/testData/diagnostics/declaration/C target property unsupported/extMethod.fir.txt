@@ -1,0 +1,36 @@
+Module: lib
+FILE: HasCustomSetters.kt
+    package annotations
+
+    public final annotation class HasCustomSetters : R|kotlin/Annotation| {
+        public constructor(): R|annotations/HasCustomSetters| {
+            super<R|kotlin/Any|>()
+        }
+
+    }
+FILE: MyClass.kt
+    package foo
+
+    public final class MyClass : R|kotlin/Any| {
+        public constructor(): R|foo/MyClass| {
+            super<R|kotlin/Any|>()
+        }
+
+        public final var someProperty: R|kotlin/String| = String()
+            public get(): R|kotlin/String|
+            public set(value: R|kotlin/String|): R|kotlin/Unit|
+
+    }
+FILE: MyExtensions.kt
+    public final fun R|foo/MyClass|.set-someProperty(value: R|kotlin/Int|): R|kotlin/Unit| {
+        this@R|/set-someProperty|.R|foo/MyClass.someProperty| = R|<local>/value|.R|kotlin/Int.toString|()
+    }
+Module: main
+FILE: bar.kt
+    package bar
+
+    public final fun test(): R|kotlin/Unit| {
+        lval x: R|foo/MyClass| = R|foo/MyClass.MyClass|()
+        R|<local>/x|.R|foo/MyClass.someProperty| = String(a string)
+        R|<local>/x|.R|foo/MyClass.someProperty| = Int(2)
+    }

@@ -1,0 +1,37 @@
+FILE: HasCustomSetters.kt
+    package annotations
+
+    public final annotation class HasCustomSetters : R|kotlin/Annotation| {
+        public constructor(): R|annotations/HasCustomSetters| {
+            super<R|kotlin/Any|>()
+        }
+
+    }
+FILE: MyClass.kt
+    package foo
+
+    public final class MyOuterClass : R|kotlin/Any| {
+        public constructor(): R|foo/MyOuterClass| {
+            super<R|kotlin/Any|>()
+        }
+
+        public final class MyClass : R|kotlin/Any| {
+            public constructor(): R|foo/MyOuterClass.MyClass| {
+                super<R|kotlin/Any|>()
+            }
+
+            @R|annotations/HasCustomSetters|() private final var someProperty: R|kotlin/String| = String()
+                private get(): R|kotlin/String|
+                private set(value: R|kotlin/String|): R|kotlin/Unit|
+
+            @R|kotlin/jvm/JvmName|(name = String($$OverloadedSetters$set-someProperty)) public final fun set-someProperty(<set-?>: R|kotlin/String|): R|kotlin/Unit| {
+                this@R|foo/MyOuterClass.MyClass|.R|foo/MyOuterClass.MyClass.someProperty| = R|<local>/<set-?>|
+            }
+
+        }
+
+        public final fun R|foo/MyOuterClass.MyClass|.set-someProperty(value: R|kotlin/Int|): R|kotlin/Unit| {
+            this@R|foo/MyOuterClass.set-someProperty|.R|foo/MyOuterClass.MyClass.set-someProperty|(R|<local>/value|.R|kotlin/Int.toString|())
+        }
+
+    }

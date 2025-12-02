@@ -1,15 +1,31 @@
 package cb77.lang.plugins.kt.overloadablesetters.util
 
 import org.jetbrains.kotlin.descriptors.Visibilities
+import org.jetbrains.kotlin.fir.FirSession
+import org.jetbrains.kotlin.fir.analysis.checkers.context.CheckerContext
+import org.jetbrains.kotlin.fir.analysis.checkers.getContainingClassSymbol
+import org.jetbrains.kotlin.fir.analysis.checkers.getContainingSymbol
 import org.jetbrains.kotlin.fir.declarations.FirDeclarationStatus
+import org.jetbrains.kotlin.fir.declarations.FirFile
 import org.jetbrains.kotlin.fir.declarations.FirProperty
+import org.jetbrains.kotlin.fir.getOwnerLookupTag
 import org.jetbrains.kotlin.fir.packageFqName
+import org.jetbrains.kotlin.fir.resolve.getContainingDeclaration
+import org.jetbrains.kotlin.fir.resolve.getSuperTypes
+import org.jetbrains.kotlin.fir.resolve.providers.firProvider
+import org.jetbrains.kotlin.fir.resolve.providers.getContainingFile
+import org.jetbrains.kotlin.fir.resolve.toClassLikeSymbol
 import org.jetbrains.kotlin.fir.symbols.FirBasedSymbol
 import org.jetbrains.kotlin.fir.symbols.impl.FirCallableSymbol
 import org.jetbrains.kotlin.fir.symbols.impl.FirClassLikeSymbol
+import org.jetbrains.kotlin.fir.symbols.impl.FirClassSymbol
+import org.jetbrains.kotlin.fir.symbols.impl.FirFileSymbol
 import org.jetbrains.kotlin.fir.symbols.impl.FirPropertySymbol
+import org.jetbrains.kotlin.fir.symbols.impl.FirRegularClassSymbol
+import org.jetbrains.kotlin.fir.utils.exceptions.withFirSymbolEntry
 import org.jetbrains.kotlin.name.Name
 import org.jetbrains.kotlin.name.packageName
+import org.jetbrains.kotlin.utils.exceptions.errorWithAttachment
 
 // putting these in one place so if I completely misunderstood how names work I can fix it easily
 fun makeSetterName(property: FirProperty): String {
@@ -41,35 +57,120 @@ fun getPropertyNameFromSetterName(setterName: String): String? {
 	return SETTER_REGEX.matchEntire(setterName)?.let { it.groups[1]?.value }
 }
 
-
-fun FirBasedSymbol<*>.isVisibleFrom(origin: FirBasedSymbol<*>): Boolean {
+fun FirBasedSymbol<*>.isVisibleFrom(origin: FirBasedSymbol<*>, session: FirSession): Boolean {
 	val status = when (this) {
 		is FirCallableSymbol<*> -> resolvedStatus
 		is FirClassLikeSymbol -> resolvedStatus
 		else -> return true
 	}
-	return isVisibleFrom(origin, status)
+	return isVisibleFrom(origin, status, session)
 }
 /**
  * Returns true if this symbol can be accessed by the argument.
  */
-fun FirBasedSymbol<*>.isVisibleFrom(origin: FirBasedSymbol<*>, status: FirDeclarationStatus): Boolean {
-	val classPackage = origin.packageFqName()
-	val packageName = when (this) {
-		is FirCallableSymbol<*> -> callableId.packageName
-		is FirClassLikeSymbol<*> -> classId.packageFqName
-		else -> return true
-	}
-	val visibility = status.visibility
-	if (visibility == Visibilities.Private || !visibility.visibleFromPackage(classPackage, packageName)) return false
-	if (visibility == Visibilities.Internal) {
-		val containingClassModuleData = origin.moduleData
-		return when (moduleData) {
-			containingClassModuleData -> true
-			in containingClassModuleData.friendDependencies -> true
-			in containingClassModuleData.dependsOnDependencies -> true
-			else -> false
+fun FirBasedSymbol<*>.isVisibleFrom(attemptedInvoker: FirBasedSymbol<*>, status: FirDeclarationStatus, session: FirSession): Boolean {
+//	fun FirBasedSymbol<*>.getPackageName() = when (this) {
+//		is FirCallableSymbol<*> -> callableId.packageName
+//		is FirClassLikeSymbol<*> -> classId.packageFqName
+//		else -> null
+//	}
+	
+	val ourVisibility = status.visibility
+	if (ourVisibility == Visibilities.Public)
+		return true;
+	
+	// For any non-public visibility:
+	run {
+		when (val containingClass = this.getContainingClassSymbol()) {
+			// If we're on the top level and if the invoker is declared in the same file, it's always "true", even if it's private
+			null -> {
+				val ourTopLevelContainer = session.firProvider.getContainingFile(this) ?: errorWithAttachment("No containing file found for `this` based symbol") {
+					withFirSymbolEntry("this", this@isVisibleFrom)
+				}
+				
+				val theirTopLevelContainer = session.firProvider.getContainingFile(attemptedInvoker);
+				if (ourTopLevelContainer.symbol == theirTopLevelContainer?.symbol)
+					return true;
+			}
+			// If we're in a class, and the invoker is either in the same class or in an outer class of this, it's always "true", even if the member is private
+			else -> {
+				val theirContainingClass = attemptedInvoker.getContainingClassSymbol() ?: return@run
+				
+				if (containingClass.isDeclaredInInnerClassOf(theirContainingClass))
+					return true;
+			}
 		}
 	}
-	return true
+
+//	if (!ourVisibility.visibleFromPackage(attemptedInvoker.packageFqName(), getPackageName() ?: return true))
+//		return false;
+	
+	return when (ourVisibility) {
+		// If "Private", and the above conditions weren't satisfied, it's always "false".
+		Visibilities.Private, Visibilities.PrivateToThis -> false
+		// If "Internal", we only have to check if they're in the same module.
+		Visibilities.Internal -> attemptedInvoker.moduleData.let { containingClassModuleData ->
+			when (moduleData) {
+				containingClassModuleData -> true
+				in containingClassModuleData.friendDependencies -> true
+				in containingClassModuleData.dependsOnDependencies -> true
+				else -> false
+			}
+		}
+		// If "Protected", we only have to check if we're in a superclass of the invoker's declared class.
+		Visibilities.Protected -> this.isDeclaredInSubClassOf(attemptedInvoker, session)
+		else -> false
+	}
+}
+
+
+/**
+ * Check if `declaredInOuter` can see `this`'s private members. (no jokes)
+ * ```
+ * class Foo {
+ *   class Bar {
+ *      private val inBar // this
+ *   }
+ *
+ *   fun inFoo() { // declaredInOuter
+ *      // I want to check if I can reference `Bar#inBar` from here
+ *   }
+ * }
+ * ```
+ */
+fun FirBasedSymbol<*>.isDeclaredInInnerClassOf(declaredInOuter: FirBasedSymbol<*>): Boolean {
+	if (declaredInOuter.packageFqName() != this.packageFqName())
+		return false;
+	
+	// if neither are declared in classes, then it can't be in a parent
+	var ourPossiblyInnerContainer = this.getContainingClassSymbol() ?: return false;
+	val theirPossiblyOuterContainerId = declaredInOuter.getContainingClassSymbol()?.classId ?: return false;
+	
+	while (true) {
+		if (ourPossiblyInnerContainer.classId == theirPossiblyOuterContainerId)
+			return true;
+		
+		ourPossiblyInnerContainer = ourPossiblyInnerContainer.getContainingClassSymbol() ?: return false;
+	}
+}
+
+/**
+ * Returns false if:
+ * - `declaredInSuper` and `this` are not either a) a class or b) declared inside a class
+ * - `this` is not either a subclass of or declared inside a subclass of `declaredInSuper`'s declaring class (or itself if declaredInSuper IS a class)
+ *
+ * Else returns true
+ */
+fun FirBasedSymbol<*>.isDeclaredInSubClassOf(declaredInSuper: FirBasedSymbol<*>, session: FirSession): Boolean {
+	val superContainingClass: FirClassLikeSymbol<*> = when (declaredInSuper) {
+		is FirClassSymbol<*> -> declaredInSuper
+		else -> declaredInSuper.getContainingClassSymbol() ?: return false; // false if declaredInSuper isn't inside a class
+	}
+	
+	val ourContainingClass: FirClassLikeSymbol<*> = when (this) {
+		is FirClassSymbol<*> -> this
+		else -> this.getContainingClassSymbol() ?: return false; // false if this isn't inside a class
+	}
+	
+	return ourContainingClass.getSuperTypes(session, true).any { it.toClassLikeSymbol(session) == superContainingClass }
 }

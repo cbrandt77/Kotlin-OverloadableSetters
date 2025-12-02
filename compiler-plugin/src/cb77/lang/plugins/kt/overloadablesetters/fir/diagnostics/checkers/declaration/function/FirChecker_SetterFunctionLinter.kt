@@ -35,7 +35,8 @@ object FirChecker_SetterFunctionLinter : FirFunctionChecker(MppCheckerKind.Commo
 		val referencedPropertyName = getPropertyNameFromSetterName(declaration.nameOrSpecialName)
 		                             ?: return;
 		
-		val owningClass: FirClassSymbol<*> = declaration.getReceiverClass(ctx.session) // if it's not a method (extension or otherwise), don't take it
+		// if it's not a method (extension or otherwise), don't take it
+		val owningClass: FirClassSymbol<*> = declaration.getReceiverClass(ctx.session)
 		                                     ?: return;
 		
 		val referencedProperty: FirPropertySymbol = findPropertyByName(owningClass, referencedPropertyName, ctx.session).toList().let { allFoo ->
@@ -55,11 +56,14 @@ object FirChecker_SetterFunctionLinter : FirFunctionChecker(MppCheckerKind.Commo
 		
 		// Now we're only acting on functions that are DEFINITELY meant to be our custom setters
 		
-		if (!referencedProperty.isVisibleFrom(declaration.symbol)) {
-			reporter.reportOn(declaration.source, FirOverloadableSetters_ErrorTypes.SETTER_DECL_TARGET_PROPERTY_NOT_VISIBLE, referencedProperty)
-		} else if (declaration.visibility > referencedProperty.visibility) {
-			/** @see FirOverloadableSetters_ErrorTypes.SETTER_DECL_CANNOT_WIDEN_VISIBILITY */
-			reporter.reportOn(declaration.source, FirErrors.CANNOT_WEAKEN_ACCESS_PRIVILEGE, referencedProperty.visibility, referencedProperty, owningClass.name)
+		when {
+			!referencedProperty.isVisibleFrom(declaration.symbol, ctx.session) -> {
+				reporter.reportOn(declaration.source, FirOverloadableSetters_ErrorTypes.SETTER_DECL_TARGET_PROPERTY_NOT_VISIBLE, referencedProperty)
+			}
+			declaration.visibility > referencedProperty.visibility -> {
+				/** @see FirOverloadableSetters_ErrorTypes.SETTER_DECL_CANNOT_WIDEN_VISIBILITY */
+				reporter.reportOn(declaration.source, FirErrors.CANNOT_WEAKEN_ACCESS_PRIVILEGE, referencedProperty.visibility, referencedProperty, owningClass.name)
+			}
 		}
 		
 		// PARAMETERS:

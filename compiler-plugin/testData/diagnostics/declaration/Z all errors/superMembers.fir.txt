@@ -1,0 +1,75 @@
+FILE: HasCustomSetters.kt
+    package annotations
+
+    public final annotation class HasCustomSetters : R|kotlin/Annotation| {
+        public constructor(): R|annotations/HasCustomSetters| {
+            super<R|kotlin/Any|>()
+        }
+
+    }
+FILE: MyClass.kt
+    package foo
+
+    public sealed class MySuperClass : R|kotlin/Any| {
+        protected constructor(): R|foo/MySuperClass| {
+            super<R|kotlin/Any|>()
+        }
+
+        @R|annotations/HasCustomSetters|() public final var publicSuperMember: R|kotlin/String| = String()
+            public get(): R|kotlin/String|
+            public set(value: R|kotlin/String|): R|kotlin/Unit|
+
+        @R|annotations/HasCustomSetters|() protected final var protectedSuperMember: R|kotlin/String| = String()
+            protected get(): R|kotlin/String|
+            protected set(value: R|kotlin/String|): R|kotlin/Unit|
+
+        @R|annotations/HasCustomSetters|() private final var privateSuperMember: R|kotlin/String| = String()
+            private get(): R|kotlin/String|
+            private set(value: R|kotlin/String|): R|kotlin/Unit|
+
+        @R|kotlin/jvm/JvmName|(name = String($$OverloadedSetters$set-publicSuperMember)) public final fun set-publicSuperMember(<set-?>: R|kotlin/String|): R|kotlin/Unit| {
+            this@R|foo/MySuperClass|.R|foo/MySuperClass.publicSuperMember| = R|<local>/<set-?>|
+        }
+
+        @R|kotlin/jvm/JvmName|(name = String($$OverloadedSetters$set-protectedSuperMember)) public final fun set-protectedSuperMember(<set-?>: R|kotlin/String|): R|kotlin/Unit| {
+            this@R|foo/MySuperClass|.R|foo/MySuperClass.protectedSuperMember| = R|<local>/<set-?>|
+        }
+
+        @R|kotlin/jvm/JvmName|(name = String($$OverloadedSetters$set-privateSuperMember)) public final fun set-privateSuperMember(<set-?>: R|kotlin/String|): R|kotlin/Unit| {
+            this@R|foo/MySuperClass|.R|foo/MySuperClass.privateSuperMember| = R|<local>/<set-?>|
+        }
+
+    }
+    public final class MyClass : R|foo/MySuperClass| {
+        public constructor(): R|foo/MyClass| {
+            super<R|foo/MySuperClass|>()
+        }
+
+        public final fun set-publicSuperMember(value: R|kotlin/Int|): R|kotlin/Unit| {
+        }
+
+        protected final fun set-publicSuperMember(value: R|kotlin/Char|): R|kotlin/Unit| {
+        }
+
+        private final fun set-publicSuperMember(value: R|kotlin/Byte|): R|kotlin/Unit| {
+        }
+
+        public final fun set-protectedSuperMember(value: R|kotlin/Int|): R|kotlin/Unit| {
+        }
+
+        protected final fun set-protectedSuperMember(value: R|kotlin/Char|): R|kotlin/Unit| {
+        }
+
+        private final fun set-protectedSuperMember(value: R|kotlin/Byte|): R|kotlin/Unit| {
+        }
+
+        public final fun set-privateSuperMember(value: R|kotlin/Int|): R|kotlin/Unit| {
+        }
+
+        protected final fun set-privateSuperMember(value: R|kotlin/Char|): R|kotlin/Unit| {
+        }
+
+        private final fun set-privateSuperMember(value: R|kotlin/Byte|): R|kotlin/Unit| {
+        }
+
+    }

@@ -226,6 +226,22 @@ public class JvmDiagnosticTestGenerated extends AbstractJvmDiagnosticTest {
         runTest("compiler-plugin/testData/diagnostics/declaration/J must return unit/test.kt");
       }
     }
+
+    @Nested
+    @TestMetadata("compiler-plugin/testData/diagnostics/declaration/Z all errors")
+    @TestDataPath("$PROJECT_ROOT")
+    public class Z_all_errors {
+      @Test
+      public void testAllFilesPresentInZ_all_errors() {
+        KtTestUtil.assertAllTestsPresentByMetadataWithExcluded(this.getClass(), new File("compiler-plugin/testData/diagnostics/declaration/Z all errors"), Pattern.compile("^(.+)\\.kt$"), Pattern.compile("^(.+)\\.fir\\.kts?$"), TargetBackend.JVM_IR, true);
+      }
+
+      @Test
+      @TestMetadata("superMembers.kt")
+      public void testSuperMembers() {
+        runTest("compiler-plugin/testData/diagnostics/declaration/Z all errors/superMembers.kt");
+      }
+    }
   }
 
   @Nested

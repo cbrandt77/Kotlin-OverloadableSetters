@@ -111,7 +111,7 @@ fun FirBasedSymbol<*>.isVisibleFrom(attemptedInvoker: FirBasedSymbol<*>, status:
 			}
 		}
 		// If "Protected", we only have to check if we're in a superclass of the invoker's declared class.
-		Visibilities.Protected -> this.isDeclaredInSubClassOf(attemptedInvoker, session)
+		Visibilities.Protected -> attemptedInvoker.isDeclaredInSubClassOf(this, session)
 		else -> false
 	}
 }
@@ -156,11 +156,11 @@ fun FirBasedSymbol<*>.isDeclaredInInnerClassOf(declaredInOuter: FirBasedSymbol<*
  * Else returns true
  */
 fun FirBasedSymbol<*>.isDeclaredInSubClassOf(declaredInSuper: FirBasedSymbol<*>, session: FirSession): Boolean {
-	val superContainingClass: FirClassLikeSymbol<*> = declaredInSuper.containingClassOrSelf() ?: return false
+	val superContainingClass = declaredInSuper.containingClassOrSelf()?.classId ?: return false
 	
 	val ourContainingClass: FirClassLikeSymbol<*> = this.containingClassOrSelf() ?: return false
 	
-	return ourContainingClass.getSuperTypes(session, true).any { it.toClassLikeSymbol(session) == superContainingClass }
+	return ourContainingClass.getSuperTypes(session, true).any { it.toClassLikeSymbol(session)?.classId == superContainingClass }
 }
 
 /**
@@ -171,17 +171,4 @@ fun FirBasedSymbol<*>.containingClassOrSelf(): FirClassLikeSymbol<*>? {
 		is FirClassLikeSymbol<*> -> this
 		else -> this.getContainingClassSymbol()
 	}
-}
-
-open class foo {
-	protected open val x: Int = 0
-}
-
-class bar : foo() {
-	public override val x: Int = 0
-}
-
-fun baz() {
-	val x = bar()
-	x.x
 }

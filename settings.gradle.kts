@@ -17,3 +17,4 @@ rootProject.name = "OverloadableSetters"
 include("compiler-plugin")
 include("gradle-plugin")
 include("plugin-annotations")
+includeBuild("test-project")

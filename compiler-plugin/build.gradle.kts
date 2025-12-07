@@ -46,9 +46,6 @@ buildConfig {
     useKotlinOutput {
         internalVisibility = true
     }
-
-    packageName(group.toString())
-    buildConfigField("String", "KOTLIN_PLUGIN_ID", "\"${rootProject.group}\"")
 }
 
 tasks.test {
@@ -103,4 +100,15 @@ fun Test.setLibraryProperty(propName: String, jarName: String) {
         ?.absolutePath
         ?: return
     systemProperty(propName, path)
+}
+
+buildConfig {
+    packageName(project.group.toString())
+    
+    className = "OverloadableSettersBuildConfig"
+    
+    buildConfigField("String", "KOTLIN_PLUGIN_ID", "\"${rootProject.group}\"")
+    
+    buildConfigField("String", "OPT_USECAMELCASE_CLINAME", "\"camelcase\"")
+    buildConfigField("String", "OPT_SETTERPATTERN_CLINAME", "\"setter-pattern\"")
 }

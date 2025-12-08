@@ -5,6 +5,8 @@ const val PROJ_VERSION = "1.0.0"
 
 const val MY_NEXUS_ID = "cbrandt77"
 
+const val JAVA_VERSION = 21
+
 object MyMetaInfo {
 	const val plugin_id = PROJ_GROUP
 }

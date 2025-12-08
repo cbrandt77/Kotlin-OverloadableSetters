@@ -1,5 +1,5 @@
 plugins {
-    kotlin("jvm")
+    id("kotlin-jvm-convention")
     id("com.github.gmazzo.buildconfig")
     id("java-gradle-plugin")
     id("com.gradle.plugin-publish")

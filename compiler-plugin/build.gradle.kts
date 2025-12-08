@@ -1,5 +1,5 @@
 plugins {
-    kotlin("jvm")
+    id("kotlin-jvm-convention")
     `java-test-fixtures`
     id("com.github.gmazzo.buildconfig")
     idea
@@ -68,8 +68,12 @@ tasks.test {
     systemProperty("idea.ignore.disabled.plugins", "true")
     systemProperty("idea.home.path", rootDir)
 }
+java {
+    toolchain.languageVersion = JavaLanguageVersion.of(21)
+}
 
 kotlin {
+   
     compilerOptions {
         optIn.add("org.jetbrains.kotlin.compiler.plugin.ExperimentalCompilerApi")
         optIn.add("org.jetbrains.kotlin.ir.symbols.UnsafeDuringIrConstructionAPI")

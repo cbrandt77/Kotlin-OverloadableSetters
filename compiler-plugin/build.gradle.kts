@@ -3,6 +3,7 @@ plugins {
     `java-test-fixtures`
     id("com.github.gmazzo.buildconfig")
     idea
+    id("module.publication")
 }
 
 sourceSets {
@@ -111,4 +112,13 @@ buildConfig {
     
     buildConfigField("String", "OPT_USECAMELCASE_CLINAME", "\"camelcase\"")
     buildConfigField("String", "OPT_SETTERPATTERN_CLINAME", "\"setter-pattern\"")
+}
+
+publishing {
+    publications {
+        create<MavenPublication>("maven") {
+            artifactId = "compiler-plugin"
+            from(components["java"])
+        }
+    }
 }

@@ -2,7 +2,8 @@ plugins {
     kotlin("jvm")
     id("com.github.gmazzo.buildconfig")
     id("java-gradle-plugin")
-    id("com.gradle.plugin-publish") version "2.0.0"
+    id("com.gradle.plugin-publish")
+    id("module.publication")
 }
 
 sourceSets {
@@ -63,6 +64,7 @@ gradlePlugin {
             displayName = "OverloadableSettersPlugin"
             description = "Add custom setters for your Kotlin properties with different types, like setting a String field with an Int or a Char."
             implementationClass = "cb77.lang.plugins.kt.overloadablesetters.gradle.OverloadableSettersGradlePlugin"
+            tags = listOf("kotlin-compiler-plugin")
         }
     }
 }

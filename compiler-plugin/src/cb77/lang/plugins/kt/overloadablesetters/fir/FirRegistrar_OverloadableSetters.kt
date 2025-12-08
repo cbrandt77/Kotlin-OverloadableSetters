@@ -5,7 +5,7 @@ import cb77.lang.plugins.kt.overloadablesetters.fir.diagnostics.FirOverloadableS
 import cb77.lang.plugins.kt.overloadablesetters.fir.extensions.generators.FirSetterDefaultSetterGenerator
 import org.jetbrains.kotlin.fir.extensions.FirExtensionRegistrar
 
-class FirRegistrar_OverloadableSetters(private val annotations: Collection<String>) : FirExtensionRegistrar() {
+class FirRegistrar_OverloadableSetters(private val annotations: Collection<String> = listOf("cb77.lang.plugins.kt.overloadablesetters.HasCustomSetters")) : FirExtensionRegistrar() {
 	override fun ExtensionRegistrarContext.configurePlugin() {
 		+FirSetterOverloadFinderService.getFactory(annotations)
 		+::FirSetterAssignmentAlterer

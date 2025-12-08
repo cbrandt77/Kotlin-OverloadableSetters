@@ -2,6 +2,7 @@ plugins {
     id("kotlin-jvm-convention")
     `java-test-fixtures`
     id("com.github.gmazzo.buildconfig")
+    alias(libs.plugins.shadow) apply false
     idea
     id("module.publication")
 }
@@ -26,6 +27,16 @@ idea {
 
 val annotationsRuntimeClasspath: Configuration by configurations.creating { isTransitive = false }
 
+
+
+val embedded by configurations.dependencyScope("embedded")
+
+val embeddedClasspath by configurations.resolvable("embeddedClasspath") { extendsFrom(embedded) }
+
+configurations.named("compileOnly").configure { extendsFrom(embedded) }
+
+configurations.named("testImplementation").configure { extendsFrom(embedded) }
+
 dependencies {
     compileOnly(kotlin("compiler"))
 
@@ -41,6 +52,13 @@ dependencies {
     testRuntimeOnly(kotlin("test"))
     testRuntimeOnly(kotlin("script-runtime"))
     testRuntimeOnly(kotlin("annotations-jvm"))
+    
+    embedded(project(":compiler-compat"))
+    rootProject.isolated.projectDirectory.dir("compiler-compat").asFile.listFiles()!!.forEach {
+        if (it.isDirectory && it.name.startsWith("k")) {
+            embedded(project(":compiler-compat:${it.name}"))
+        }
+    }
 }
 
 buildConfig {
@@ -73,7 +91,6 @@ java {
 }
 
 kotlin {
-   
     compilerOptions {
         optIn.add("org.jetbrains.kotlin.compiler.plugin.ExperimentalCompilerApi")
         optIn.add("org.jetbrains.kotlin.ir.symbols.UnsafeDuringIrConstructionAPI")

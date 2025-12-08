@@ -1,8 +1,8 @@
 package cb77.lang.plugins.kt.overloadablesetters.util
 
+import dev.zacsweers.metro.compiler.compat.CompatContext.Companion.getContainingClassSymbol
 import org.jetbrains.kotlin.descriptors.Visibilities
 import org.jetbrains.kotlin.fir.FirSession
-import org.jetbrains.kotlin.fir.analysis.checkers.getContainingClassSymbol
 import org.jetbrains.kotlin.fir.declarations.FirDeclarationStatus
 import org.jetbrains.kotlin.fir.declarations.FirProperty
 import org.jetbrains.kotlin.fir.packageFqName

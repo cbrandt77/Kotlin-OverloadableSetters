@@ -11,9 +11,24 @@
     nexus-publish = { module = "io.github.gradle-nexus.publish-plugin:io.github.gradle-nexus.publish-plugin.gradle.plugin", version.ref = "nexus-publish" }
     build-config = { module = "com.github.gmazzo.buildconfig:com.github.gmazzo.buildconfig.gradle.plugin", version.ref = "build-config" }
 
+    kotlin-annotationsJvm = { module = "org.jetbrains.kotlin:kotlin-annotations-jvm", version.ref = "kotlin" }
+    kotlin-compiler = { module = "org.jetbrains.kotlin:kotlin-compiler", version.ref = "kotlin" }
+    kotlin-compilerTestFramework = { module = "org.jetbrains.kotlin:kotlin-compiler-internal-test-framework", version.ref = "kotlin" }
+    kotlin-reflect = { module = "org.jetbrains.kotlin:kotlin-reflect", version.ref = "kotlin" }
+    kotlin-gradlePlugin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin" }
+    kotlin-gradlePlugin-api = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin-api", version.ref = "kotlin" }
+    kotlin-aptEmbeddable = { module = "org.jetbrains.kotlin:kotlin-annotation-processing-embeddable", version.ref = "kotlin" }
+    kotlin-stdlib = { module = "org.jetbrains.kotlin:kotlin-stdlib", version.ref = "kotlin" }
+    kotlin-scriptRuntime = { module = "org.jetbrains.kotlin:kotlin-script-runtime", version.ref = "kotlin" }
+    kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }
+    kotlin-testJunit5 = { module = "org.jetbrains.kotlin:kotlin-test-junit5", version.ref = "kotlin" }
+
 [plugins]
     kotlin-jvm = { id = "org.jetbrains.kotlin.jvm" }
     kotlin-multiplatform = { id = "org.jetbrains.kotlin.multiplatform" }
+
     build-config = { id = "com.github.gmazzo.buildconfig" }
     binary-compatibility-validator = { id = "org.jetbrains.kotlinx.binary-compatibility-validator", version.ref = "bcv" }
     gradle-plugin-publish = { id = "com.gradle.plugin-publish", version.ref = "gradle-plugin-publish" }
+
+    shadow = { id = "com.gradleup.shadow", version = "9.2.2" }

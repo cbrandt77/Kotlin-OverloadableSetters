@@ -1,6 +1,5 @@
 package cb77.lang.plugins.kt.overloadablesetters.fir.extensions.generators
 
-import cb77.lang.plugins.kt.overloadablesetters.util.getDeclaredAndInheritedCallables
 import cb77.lang.plugins.kt.overloadablesetters.util.makeSetterName
 import cb77.lang.plugins.kt.overloadablesetters.util.supportsCustomSetters
 import org.jetbrains.kotlin.GeneratedDeclarationKey
@@ -23,7 +22,6 @@ import org.jetbrains.kotlin.fir.declarations.origin
 import org.jetbrains.kotlin.fir.declarations.utils.canNarrowDownGetterType
 import org.jetbrains.kotlin.fir.expressions.builder.buildAnnotation
 import org.jetbrains.kotlin.fir.expressions.builder.buildAnnotationArgumentMapping
-import org.jetbrains.kotlin.fir.expressions.builder.buildEnumEntryDeserializedAccessExpression
 import org.jetbrains.kotlin.fir.expressions.builder.buildLiteralExpression
 import org.jetbrains.kotlin.fir.expressions.builder.buildPropertyAccessExpression
 import org.jetbrains.kotlin.fir.expressions.builder.buildThisReceiverExpression
@@ -47,7 +45,6 @@ import org.jetbrains.kotlin.name.CallableId
 import org.jetbrains.kotlin.name.Name
 import org.jetbrains.kotlin.name.SpecialNames
 import org.jetbrains.kotlin.name.StandardClassIds
-import org.jetbrains.kotlin.resolve.deprecation.DeprecationLevelValue
 import org.jetbrains.kotlin.types.ConstantValueKind
 import org.jetbrains.kotlin.utils.addToStdlib.runIf
 import org.jetbrains.kotlin.utils.mapToSetOrEmpty
@@ -177,7 +174,12 @@ class FirSetterDefaultSetterGenerator(session: FirSession) : FirDeclarationGener
 				origin = OverloadableSettersDeclarationKey.origin
 				returnTypeRef = prop.resolvedReturnTypeRef
 				name = SpecialNames.IMPLICIT_SET_PARAMETER
-				symbol = FirValueParameterSymbol()
+				try {
+					symbol = FirValueParameterSymbol()
+				} catch (error: NoSuchMethodError) {
+				
+				}
+				
 				isCrossinline = false
 				isNoinline = false
 				isVararg = false

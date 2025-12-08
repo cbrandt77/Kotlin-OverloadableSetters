@@ -2,14 +2,15 @@ package cb77.lang.plugins.kt.overloadablesetters.fir.extensions.transformers
 
 import cb77.lang.plugins.kt.overloadablesetters.util.makeSetterName
 import cb77.lang.plugins.kt.overloadablesetters.util.supportsCustomSetters
+import dev.zacsweers.metro.compiler.compat.CompatContext.Companion.fakeElement
 import org.jetbrains.kotlin.KtFakeSourceElementKind
-import org.jetbrains.kotlin.fakeElement
 import org.jetbrains.kotlin.fir.FirSession
 import org.jetbrains.kotlin.fir.declarations.DirectDeclarationsAccess
 import org.jetbrains.kotlin.fir.expressions.FirFunctionCallOrigin
 import org.jetbrains.kotlin.fir.expressions.FirStatement
 import org.jetbrains.kotlin.fir.expressions.FirVariableAssignment
 import org.jetbrains.kotlin.fir.expressions.buildUnaryArgumentList
+import org.jetbrains.kotlin.fir.expressions.builder.buildFunctionCall
 import org.jetbrains.kotlin.fir.expressions.calleeReference
 import org.jetbrains.kotlin.fir.expressions.dispatchReceiver
 import org.jetbrains.kotlin.fir.extensions.FirAssignExpressionAltererExtension
@@ -34,15 +35,15 @@ class FirSetterAssignmentAlterer(session: FirSession) : FirAssignExpressionAlter
 			} as FirPropertySymbol? ?: return null;
 		
 		// can't get the type of the rvalue during this phase. need to just check if it supports custom setters and use the setBar method blindly
-		return buildFunctionCall(variableAssignment, lSymbol)
+		return createNewFunctionCall(variableAssignment, lSymbol)
 	}
 	
-	fun buildFunctionCall(variableAssignment: FirVariableAssignment, targetProperty: FirPropertySymbol): FirStatement {
+	fun createNewFunctionCall(variableAssignment: FirVariableAssignment, targetProperty: FirPropertySymbol): FirStatement {
 		val rightArgument = variableAssignment.rValue
 		
 		val setterName = Name.identifier(makeSetterName(targetProperty))
 		
-		return org.jetbrains.kotlin.fir.expressions.builder.buildFunctionCall {
+		return buildFunctionCall {
 			source = variableAssignment.source?.fakeElement(KtFakeSourceElementKind.AssignmentPluginAltered)
 			explicitReceiver = variableAssignment.dispatchReceiver
 			argumentList = buildUnaryArgumentList(rightArgument)

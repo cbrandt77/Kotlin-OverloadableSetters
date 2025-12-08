@@ -6,7 +6,7 @@ class SetterTester {
 	@HasCustomSetters
 	var foo: String = ""
 	
-	fun `set-foo`() {
+	fun `set-foo`(value:) {
 	
 	}
 }

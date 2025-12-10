@@ -2,6 +2,7 @@ package cb77.lang.plugins.kt.overloadablesetters.fir.extensions.generators
 
 import cb77.lang.plugins.kt.overloadablesetters.util.makeSetterName
 import cb77.lang.plugins.kt.overloadablesetters.util.supportsCustomSetters
+import dev.zacsweers.metro.compiler.compat.CompatContext
 import org.jetbrains.kotlin.GeneratedDeclarationKey
 import org.jetbrains.kotlin.KtFakeSourceElementKind
 import org.jetbrains.kotlin.KtSourceElement
@@ -174,11 +175,7 @@ class FirSetterDefaultSetterGenerator(session: FirSession) : FirDeclarationGener
 				origin = OverloadableSettersDeclarationKey.origin
 				returnTypeRef = prop.resolvedReturnTypeRef
 				name = SpecialNames.IMPLICIT_SET_PARAMETER
-				try {
-					symbol = FirValueParameterSymbol()
-				} catch (error: NoSuchMethodError) {
-				
-				}
+				symbol = CompatContext.newFirValueParameterSymbol(SpecialNames.IMPLICIT_SET_PARAMETER)
 				
 				isCrossinline = false
 				isNoinline = false

@@ -1,3 +1,5 @@
+import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
+
 plugins {
     id("kotlin-jvm-convention")
     `java-test-fixtures`
@@ -6,6 +8,27 @@ plugins {
     idea
     id("module.publication")
 }
+
+val shadowJar =
+    tasks.register<ShadowJar>("shadowJar") {
+        from(java.sourceSets.main.map { it.output })
+        configurations.add(embeddedClasspath)
+        
+        // TODO these are relocated, do we need to/can we exclude these?
+        //  exclude("META-INF/wire-runtime.kotlin_module")
+        //  exclude("META-INF/okio.kotlin_module")
+        dependencies {
+            exclude(dependency("org.jetbrains:.*"))
+            exclude(dependency("org.intellij:.*"))
+            exclude(dependency("org.jetbrains.kotlin:.*"))
+            exclude(dependency("dev.drewhamilton.poko:.*"))
+        }
+        
+        duplicatesStrategy = DuplicatesStrategy.INCLUDE
+        mergeServiceFiles()
+        
+        relocate("dev.zacsweers.metro", "cb77.lang.plugins.kt.overloadedsetters.shaded.dev.zacsweers.metro")
+    }
 
 sourceSets {
     main {

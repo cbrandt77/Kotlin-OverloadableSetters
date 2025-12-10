@@ -27,6 +27,7 @@ import org.jetbrains.kotlin.fir.symbols.impl.FirCallableSymbol
 import org.jetbrains.kotlin.fir.symbols.impl.FirClassLikeSymbol
 import org.jetbrains.kotlin.fir.symbols.impl.FirClassSymbol
 import org.jetbrains.kotlin.fir.symbols.impl.FirNamedFunctionSymbol
+import org.jetbrains.kotlin.fir.symbols.impl.FirValueParameterSymbol
 import org.jetbrains.kotlin.fir.types.ConeKotlinType
 import org.jetbrains.kotlin.ir.builders.Scope
 import org.jetbrains.kotlin.ir.builders.declarations.IrFieldBuilder
@@ -135,7 +136,10 @@ interface CompatContext {
 			}
 		}
 		
+		override fun newFirValueParameterSymbol(name: Name) = inst.newFirValueParameterSymbol(name)
 	}
+	
+	
 	
 	private object CompatFactoryLoader {
 		private fun loadFactories(): Sequence<Factory> {
@@ -427,6 +431,13 @@ interface CompatContext {
 				"usages of IrDeclarationOrigin constants are getting inlined and causing runtime failures, so we have a non-inline version to defeat this inlining",
 	)
 	fun IrProperty.addBackingFieldCompat(builder: IrFieldBuilder.() -> Unit = {}): IrField
+	
+	@CompatApi(
+			since = "2.2.20-ij252-24",
+			reason = CompatApi.Reason.ABI_CHANGE,
+			message = "In this specific version, they remove the default constructor and add a 'name' parameter."
+	)
+	fun newFirValueParameterSymbol(name: Name): FirValueParameterSymbol
 }
 
 private data class FactoryData(val version: String, val factory: CompatContext.Factory)

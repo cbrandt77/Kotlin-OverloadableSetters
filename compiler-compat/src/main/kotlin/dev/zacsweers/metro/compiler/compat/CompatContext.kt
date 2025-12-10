@@ -164,19 +164,31 @@ interface CompatContext {
 							null
 						}
 					}
-					.filter { (version, factory) -> (testVersion ?: version) >= factory.minVersion }
-					.maxByOrNull { (_, factory) -> factory.minVersion }
-					?.factory
-				?: error(
-						"""
-              Unrecognized Kotlin version!
-
-              Available factories for: ${factories.joinToString(separator = "\n") { it.minVersion }}
-              Detected version(s): ${factories.map { it.currentVersion }.distinct().joinToString(separator = "\n")}
-            """
-							.trimIndent()
+					.filter { (version, factory) -> (testVersion ?: version) >= factory.minVersion }.iterator()
+			var max: FactoryData? = null
+			for (possibleFactory in targetFactory) {
+				if (possibleFactory.version == possibleFactory.factory.minVersion) {
+					return possibleFactory.factory
+				}
+				
+				if (max == null) {
+					max = possibleFactory
+				} else if (max.factory.minVersion < possibleFactory.factory.minVersion) {
+					max = possibleFactory
+				}
+			}
+			if (max == null) {
+				error(
+					"""
+					Unrecognized Kotlin version!
+		
+	                Available factories for: ${factories.joinToString(separator = "\n") { it.minVersion }}
+	                Detected version(s): ${factories.map { it.currentVersion }.distinct().joinToString(separator = "\n")}
+		            """.trimIndent()
 				)
-			return targetFactory
+			}
+			
+			return max.factory
 		}
 		
 		fun create(): CompatContext = resolveFactory().create()

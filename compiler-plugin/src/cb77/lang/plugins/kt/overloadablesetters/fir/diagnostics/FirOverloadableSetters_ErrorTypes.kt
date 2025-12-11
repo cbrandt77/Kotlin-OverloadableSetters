@@ -97,7 +97,7 @@ object FirOverloadableSetters_ErrorTypes : KtDiagnosticsContainer() {
 	 * I feel like implied generics _could_ work, but how on earth would you forcibly disambiguate those??
 	 * I don't want to deal with that, so we're not supporting it.
 	 */
-	val SETTER_DECL_MUST_NOT_HAVE_TYPE_PARAMS by error0<KtTypeArgumentList>(SourceElementPositioningStrategies.TYPE_PARAMETERS_LIST)
+	val SETTER_DECL_MUST_NOT_HAVE_TYPE_PARAMS by error0<KtNamedFunction>(SourceElementPositioningStrategies.TYPE_PARAMETERS_LIST)
 	
 	/**
 	 * A setter function has context parameters.
@@ -105,7 +105,7 @@ object FirOverloadableSetters_ErrorTypes : KtDiagnosticsContainer() {
 	 * Honestly I feel like this _could_ work; because they're implied, we wouldn't need to find a way to shove them into the assignment operator.
 	 * Might revisit this later.
 	 */
-	val SETTER_DECL_MUST_NOT_HAVE_CONTEXT_PARAMS by error0<KtContextReceiverList>(SourceElementPositioningStrategies.DECLARATION_SIGNATURE_OR_DEFAULT)
+	val SETTER_DECL_MUST_NOT_HAVE_CONTEXT_PARAMS by error0<KtNamedFunction>(SourceElementPositioningStrategies.DECLARATION_SIGNATURE_OR_DEFAULT)
 	
 	/**
 	 * A setter function has a return type that isn't unit.

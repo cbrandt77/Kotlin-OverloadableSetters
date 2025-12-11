@@ -7,16 +7,20 @@ import kotlin.test.Test
 import kotlin.test.*
 
 class SemVerTest {
-	fun SemVer.assertGreaterThan(other: SemVer) {
-		assertThat("compareTo() > 0", this.compareTo(other), greaterThan(0))
-		assertThat("compareVersionNoSuffix() >= 0", this.compareVersionNoSuffix(other), greaterThanOrEqualTo(0))
-		assertThat("compareSuffixes() >= 0", this.compareSuffixes(other), notNullAnd(greaterThanOrEqualTo(0)))
+	fun SemVer.assertGreaterThan(other: SemVer, msg: String? = null) {
+		assertAll(msg,
+				{ assertThat("compareTo() > 0", this.compareTo(other), greaterThan(0)) },
+				{ assertThat("compareVersionNoSuffix() >= 0", this.compareVersionNoSuffix(other), greaterThanOrEqualTo(0)) },
+				{ assertThat("compareSuffixes() >= 0", this.compareSuffixes(other), notNullAnd(greaterThanOrEqualTo(0))) }
+		)
 	}
 	
-	fun SemVer.assertLessThan(other: SemVer) {
-		assertThat("compareTo() < 0", this.compareTo(other), lessThan(0))
-		assertThat("compareVersionNoSuffix() <= 0", this.compareVersionNoSuffix(other), lessThanOrEqualTo(0))
-		assertThat("compareSuffixes() <= 0", this.compareSuffixes(other), notNullAnd(lessThanOrEqualTo(0)))
+	fun SemVer.assertLessThan(other: SemVer, msg: String? = null) {
+		assertAll(msg,
+				{ assertThat("compareTo() < 0", this.compareTo(other), lessThan(0)) },
+				{ assertThat("compareVersionNoSuffix() <= 0", this.compareVersionNoSuffix(other), lessThanOrEqualTo(0)) },
+				{ assertThat("compareSuffixes() <= 0", this.compareSuffixes(other), notNullAnd(lessThanOrEqualTo(0))) }
+		)
 	}
 	
 	@Test
@@ -71,14 +75,15 @@ class SemVerTest {
 		
 		assertAll(
 				{
-					assertThat(downstream1.compareVersionNoSuffix(testVer), equalTo(0))
-					assertThat(downstream1.compareTo(testVer), greaterThan(0))
+					assertAll("downstream1",
+					          { assertThat(downstream1.compareVersionNoSuffix(testVer), equalTo(0)) },
+					          { assertThat(downstream1.compareTo(testVer), greaterThan(0)) })
 				},
 				{
-					downstream2.assertGreaterThan(testVer)
+					downstream2.assertGreaterThan(testVer, "downstream2")
 				},
 				{
-					upstream1.assertLessThan(testVer)
+					upstream1.assertLessThan(testVer, "upstream1")
 				}
 		)
 	}
@@ -93,7 +98,11 @@ class SemVerTest {
 		later.assertGreaterThan(testver)
 		later2.assertGreaterThan(testver)
 		
-		val incompatible = SemVer("2.2.20-beta1")
+		val before = SemVer("2.2.20-beta1")
+		before.assertLessThan(testver)
+		
+		
+		val incompatible = SemVer("2.2.20-dev-4")
 		
 		assertThat(incompatible.compareVersionNoSuffix(testver), equalTo(0))
 		assertThat(incompatible.compareSuffixes(testver), nullValue())
@@ -120,16 +129,16 @@ class SuffixTest {
 		assertEquals(0, testver.number)
 	}
 	
-	fun SemVer.Suffix.assertGreaterThan(other: SemVer.Suffix) {
-		assertThat(this.compareTo(other), notNullAnd(greaterThan(0)))
+	fun SemVer.Suffix.assertGreaterThan(other: SemVer.Suffix, msg: String = "") {
+		assertThat(msg, this.compareTo(other), notNullAnd(greaterThan(0)))
 	}
 	
-	fun SemVer.Suffix.assertLessThan(other: SemVer.Suffix) {
-		assertThat(this.compareTo(other), notNullAnd(lessThan(0)))
+	fun SemVer.Suffix.assertLessThan(other: SemVer.Suffix, msg: String = "") {
+		assertThat(msg, this.compareTo(other), notNullAnd(lessThan(0)))
 	}
 	
-	fun SemVer.Suffix.assertIncompatibleWith(other: SemVer.Suffix) {
-		assertThat(this.compareTo(other), nullValue())
+	fun SemVer.Suffix.assertIncompatibleWith(other: SemVer.Suffix, msg: String = "") {
+		assertThat(msg, this.compareTo(other), nullValue())
 	}
 	
 	@Test
@@ -169,7 +178,7 @@ class SuffixTest {
 		val dev = SemVer.Suffix("dev")
 		val ij = SemVer.Suffix("ij242")
 		
-		beta.assertLessThan(testver)
+		beta.assertLessThan(testver, "beta")
 		
 		dev.assertGreaterThan(testver)
 		

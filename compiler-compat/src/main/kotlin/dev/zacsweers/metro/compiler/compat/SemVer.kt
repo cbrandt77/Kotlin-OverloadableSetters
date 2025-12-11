@@ -143,14 +143,14 @@ class SemVer(stringRep: String) : Comparable<SemVer> {
 			 * If 0, indicates not applicable
 			 */
 			fun getPrefixPositioningRelativeToStable(prefix: String?): Int {
-				if (prefix == null)
+				if (prefix == null || prefix.isEmpty())
 					return 0
 				val inAhead = prefix_Ahead.indexOf(prefix)
 				if (inAhead != -1)
-					return inAhead
+					return inAhead + 1
 				val inBehind = prefix_Behind.indexOf(prefix)
 				if (inBehind != -1)
-					return -inBehind
+					return -(inBehind + 1)
 				return 0
 			}
 			

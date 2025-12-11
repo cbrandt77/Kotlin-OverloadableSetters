@@ -110,7 +110,7 @@ class SuffixTest {
 	@Test
 	fun `parsing - number only`() {
 		val testver = SemVer.Suffix("5437")
-		assertEquals(null, testver.prefix)
+		assertEquals("", testver.prefix)
 		assertEquals(5437, testver.number)
 	}
 	@Test
@@ -151,8 +151,13 @@ class SuffixTest {
 		val dev = SemVer.Suffix("dev")
 		val numOnly = SemVer.Suffix("44")
 		
-		beta.assertIncompatibleWith(testver)
+		// before release, therefore technically compatible
+		beta.assertLessThan(testver)
+		
+		// also downstream, incompatible
 		dev.assertIncompatibleWith(testver)
+		
+		// just flat-out not comparable
 		numOnly.assertIncompatibleWith(testver)
 	}
 	
@@ -165,7 +170,9 @@ class SuffixTest {
 		val ij = SemVer.Suffix("ij242")
 		
 		beta.assertLessThan(testver)
+		
 		dev.assertGreaterThan(testver)
+		
 		ij.assertGreaterThan(testver)
 	}
 }

@@ -15,7 +15,7 @@ class MyClass {
 	@HasCustomSetters
 	var someProperty: String = ""
 	
-	fun <!SETTER_DECL_PARAMETER_SHADOWS_PROPERTY_TYPE!>`set-someProperty`<!>(value: String) {
+	fun `set-someProperty`(value: <!SETTER_DECL_PARAMETER_SHADOWS_PROPERTY_TYPE!>String<!>) {
 		<!OVERLOAD_RESOLUTION_AMBIGUITY!>someProperty<!> = value.toString()
 	}
 	
@@ -23,6 +23,6 @@ class MyClass {
 	var someOtherProperty: Int = 0
 }
 
-fun MyClass.<!SETTER_DECL_PARAMETER_SHADOWS_PROPERTY_TYPE!>`set-someOtherProperty`<!>(value: Int) {
+fun MyClass.`set-someOtherProperty`(value: <!SETTER_DECL_PARAMETER_SHADOWS_PROPERTY_TYPE!>Int<!>) {
 	someOtherProperty = value
 }

@@ -114,8 +114,6 @@ class SemVer(stringRep: String) : Comparable<SemVer> {
 		
 		
 		companion object {
-			val EMPTY = Suffix("", 0)
-			
 			private val wordNumberRegex = Regex("^([a-zA-Z]+)?(\\d+)?$")
 			
 			/**
@@ -136,6 +134,8 @@ class SemVer(stringRep: String) : Comparable<SemVer> {
 					"beta",
 					"alpha"
 			)
+			
+			val EMPTY = Suffix("", 0)
 			
 			/**
 			 * If positive, indicates that the prefix means it's ahead of its annotated version

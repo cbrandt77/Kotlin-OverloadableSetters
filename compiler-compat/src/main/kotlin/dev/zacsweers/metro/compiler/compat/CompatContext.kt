@@ -2,8 +2,6 @@
 // SPDX-License-Identifier: Apache-2.0
 package dev.zacsweers.metro.compiler.compat
 
-import java.io.FileNotFoundException
-import java.util.ServiceLoader
 import org.jetbrains.kotlin.GeneratedDeclarationKey
 import org.jetbrains.kotlin.KtFakeSourceElementKind
 import org.jetbrains.kotlin.KtSourceElement
@@ -40,6 +38,9 @@ import org.jetbrains.kotlin.ir.types.IrType
 import org.jetbrains.kotlin.ir.types.IrTypeSystemContext
 import org.jetbrains.kotlin.name.CallableId
 import org.jetbrains.kotlin.name.Name
+import java.io.FileNotFoundException
+import java.util.LinkedList
+import java.util.ServiceLoader
 
 interface CompatContext {
 	companion object : CompatContext {
@@ -151,35 +152,31 @@ interface CompatContext {
 		 */
 		private fun resolveFactory(
 			factories: Sequence<Factory> = loadFactories(),
-			testVersion: String? = null,
+			pTestVersion: String? = null,
 		): Factory {
-			val targetFactory =
+			data class FactoryData(val factory: Factory, val compilerVersion: SemVer, val minSupported: SemVer) {
+				constructor(factory: Factory) : this(factory, SemVer(factory.currentVersion), SemVer(factory.minVersion))
+			}
+			val testVersion = pTestVersion?.let { SemVer(it) }
+			
+			val possibleFactories =
 				factories
 					.mapNotNull { factory ->
 						// Filter out any factories that can't compute the Kotlin version, as
 						// they're _definitely_ not compatible
 						try {
-							FactoryData(factory.currentVersion, factory)
+							FactoryData(factory)
 						} catch (_: Throwable) {
 							null
 						}
 					}
-					.filter { (version, factory) -> (testVersion ?: version) >= factory.minVersion }.iterator()
-			var max: FactoryData? = null
-			for (possibleFactory in targetFactory) {
-				if (possibleFactory.version == possibleFactory.factory.minVersion) {
-					return possibleFactory.factory
-				}
-				
-				if (max == null) {
-					max = possibleFactory
-				} else if (max.factory.minVersion < possibleFactory.factory.minVersion) {
-					max = possibleFactory
-				}
-			}
-			if (max == null) {
+					.filter { (_, compilerVersion, minSupported) ->
+						minSupported <= (testVersion ?: compilerVersion)
+					}
+			
+			fun onError(): Nothing {
 				error(
-					"""
+						"""
 					Unrecognized Kotlin version!
 		
 	                Available factories for: ${factories.joinToString(separator = "\n") { it.minVersion }}
@@ -188,7 +185,42 @@ interface CompatContext {
 				)
 			}
 			
-			return max.factory
+			var bestMatch: FactoryData? = null
+			
+			for (currentFactoryData in possibleFactories) {
+				val (_, compilerVersion, minSupported) = currentFactoryData
+				
+				// CHECKING COMPATIBILITY
+				val compilerVsMin = compilerVersion.compareVersionNoSuffix(minSupported)
+				
+				// if compiler is earlier than min, not compatible
+				if (compilerVsMin < 0)
+					continue;
+				
+				// if they have the same major version, we need to check how their suffixes play out
+				// if the compiler version is on a downstream branch, we must ensure minSupported isn't on a DIFFERENT downstream branch
+				if (compilerVsMin == 0) {
+					val compilerVsMin = compilerVersion.compareSuffixes(minSupported)
+					// if null, it's on a downstream branch. if it's earlier than min supported version, still bad
+					if (compilerVsMin == null || compilerVsMin < 0)
+						continue;
+				}
+				
+				
+				// Now we can check against the current best to see if it's a closer match
+				if (bestMatch == null) {
+					bestMatch = currentFactoryData
+					continue;
+				}
+				
+				// we shouldn't have to worry about if it's incompatible with the current best match,
+				//      because bestMatch is guaranteed to be compatible with the compiler ig
+				if (minSupported > bestMatch.minSupported) {
+					bestMatch = currentFactoryData
+				}
+			}
+			
+			return bestMatch?.factory ?: onError()
 		}
 		
 		fun create(): CompatContext = resolveFactory().create()
@@ -451,8 +483,6 @@ interface CompatContext {
 	)
 	fun newFirValueParameterSymbol(name: Name): FirValueParameterSymbol
 }
-
-private data class FactoryData(val version: String, val factory: CompatContext.Factory)
 
 @Suppress("UNUSED")
 internal annotation class CompatApi(

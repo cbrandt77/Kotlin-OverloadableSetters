@@ -38,6 +38,7 @@ import org.jetbrains.kotlin.fir.symbols.impl.FirCallableSymbol
 import org.jetbrains.kotlin.fir.symbols.impl.FirClassLikeSymbol
 import org.jetbrains.kotlin.fir.symbols.impl.FirClassSymbol
 import org.jetbrains.kotlin.fir.symbols.impl.FirNamedFunctionSymbol
+import org.jetbrains.kotlin.fir.symbols.impl.FirValueParameterSymbol
 import org.jetbrains.kotlin.fir.toEffectiveVisibility
 import org.jetbrains.kotlin.fir.toFirResolvedTypeRef
 import org.jetbrains.kotlin.fir.types.ConeKotlinType
@@ -232,6 +233,8 @@ public class CompatContextImpl : CompatContext {
   override fun IrProperty.addBackingFieldCompat(builder: IrFieldBuilder.() -> Unit): IrField {
     return addBackingField(builder)
   }
+  
+  override fun newFirValueParameterSymbol(name: Name): FirValueParameterSymbol = FirValueParameterSymbol()
   
   public class Factory : CompatContext.Factory {
     override val minVersion: String = "2.2.20"

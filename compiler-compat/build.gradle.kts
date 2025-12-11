@@ -17,4 +17,5 @@ kotlin {
 dependencies {
   compileOnly(libs.kotlin.compiler)
   compileOnly(libs.kotlin.stdlib)
+  implementation(libs.semver)
 }

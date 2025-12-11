@@ -14,9 +14,6 @@ val shadowJar =
         from(java.sourceSets.main.map { it.output })
         configurations.add(embeddedClasspath)
         
-        // TODO these are relocated, do we need to/can we exclude these?
-        //  exclude("META-INF/wire-runtime.kotlin_module")
-        //  exclude("META-INF/okio.kotlin_module")
         dependencies {
             exclude(dependency("org.jetbrains:.*"))
             exclude(dependency("org.intellij:.*"))
@@ -82,6 +79,11 @@ dependencies {
             embedded(project(":compiler-compat:${it.name}"))
         }
     }
+}
+
+for (c in arrayOf("apiElements", "runtimeElements")) {
+    configurations.named(c) { artifacts.removeIf { true } }
+    artifacts.add(c, shadowJar)
 }
 
 buildConfig {

@@ -111,11 +111,6 @@ class SemVer(stringRep: String) : Comparable<SemVer> {
 			return this.positionRelativeToNoPrefix - other.positionRelativeToNoPrefix
 		}
 		
-		/**
-		 * If positive, indicates that the prefix means it's ahead of its annotated version
-		 * If negative, indicates that the prefix is behind its annotated version
-		 * If 0, indicates not applicable
-		 */
 		
 		
 		companion object {
@@ -142,6 +137,11 @@ class SemVer(stringRep: String) : Comparable<SemVer> {
 					"alpha"
 			)
 			
+			/**
+			 * If positive, indicates that the prefix means it's ahead of its annotated version
+			 * If negative, indicates that the prefix is behind its annotated version
+			 * If 0, indicates not applicable
+			 */
 			fun getPrefixPositioningRelativeToStable(prefix: String?): Int {
 				if (prefix == null)
 					return 0

@@ -69,11 +69,12 @@ object FirChecker_SetterFunctionLinter : FirFunctionChecker(MppCheckerKind.Commo
 		if (declaration.valueParameters.size != 1) {
 			reporter.reportOn(declaration.source, FirOverloadableSetters_ErrorTypes.SETTER_DECL_MUST_HAVE_SINGLE_PARAM)
 		} else {
-			val firstParamType = declaration.valueParameters[0].returnTypeRef.coneTypeOrNull
+			val firstParameter = declaration.valueParameters[0]
+			val firstParamType = firstParameter.returnTypeRef.coneTypeOrNull
 			val propertyType = referencedProperty.resolvedReturnType
 			
 			if (firstParamType == propertyType) {
-				reporter.reportOn(declaration.source, FirOverloadableSetters_ErrorTypes.SETTER_DECL_PARAMETER_SHADOWS_PROPERTY_TYPE, firstParamType, propertyType)
+				reporter.reportOn(firstParameter.source, FirOverloadableSetters_ErrorTypes.SETTER_DECL_PARAMETER_SHADOWS_PROPERTY_TYPE, firstParamType, propertyType)
 			}
 		}
 		

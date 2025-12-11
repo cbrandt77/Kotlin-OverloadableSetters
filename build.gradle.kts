@@ -12,3 +12,10 @@ allprojects {
     version = "1.0-SNAPSHOT"
 }
 
+tasks.register("publishToMavenLocal") {
+    arrayOf(project(":compiler-plugin"), project(":gradle-plugin"), project(":plugin-annotations")).forEach {
+        dependsOn(it.tasks["publishToMavenLocal"])
+    }
+    group = "custom"
+    
+}

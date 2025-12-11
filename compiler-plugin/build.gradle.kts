@@ -4,28 +4,28 @@ plugins {
     id("kotlin-jvm-convention")
     `java-test-fixtures`
     id("com.github.gmazzo.buildconfig")
-    alias(libs.plugins.shadow) apply false
+    alias(libs.plugins.shadow)
     idea
     id("module.publication")
 }
 
-val shadowJar =
-    tasks.register<ShadowJar>("shadowJar") {
-        from(java.sourceSets.main.map { it.output })
-        configurations.add(embeddedClasspath)
-        
-        dependencies {
-            exclude(dependency("org.jetbrains:.*"))
-            exclude(dependency("org.intellij:.*"))
-            exclude(dependency("org.jetbrains.kotlin:.*"))
-            exclude(dependency("dev.drewhamilton.poko:.*"))
-        }
-        
-        duplicatesStrategy = DuplicatesStrategy.INCLUDE
-        mergeServiceFiles()
-        
-        relocate("dev.zacsweers.metro", "cb77.lang.plugins.kt.overloadedsetters.shaded.dev.zacsweers.metro")
-    }
+//val shadowJar =
+//    tasks.register<ShadowJar>("shadowJar") {
+//        from(java.sourceSets.main.map { it.output })
+//        configurations.add(embeddedClasspath)
+//
+//        dependencies {
+//            exclude(dependency("org.jetbrains:.*"))
+//            exclude(dependency("org.intellij:.*"))
+//            exclude(dependency("org.jetbrains.kotlin:.*"))
+//            exclude(dependency("dev.drewhamilton.poko:.*"))
+//        }
+//
+//        duplicatesStrategy = DuplicatesStrategy.INCLUDE
+//        mergeServiceFiles()
+//
+//        relocate("dev.zacsweers.metro", "cb77.lang.plugins.kt.overloadedsetters.shaded.dev.zacsweers.metro")
+//    }
 
 sourceSets {
     main {
@@ -74,22 +74,41 @@ dependencies {
     testRuntimeOnly(kotlin("annotations-jvm"))
     
     embedded(project(":compiler-compat"))
-    rootProject.isolated.projectDirectory.dir("compiler-compat").asFile.listFiles()!!.forEach {
+    rootProject.isolated.projectDirectory.dir("compiler-compat").asFile.listFiles()?.forEach {
         if (it.isDirectory && it.name.startsWith("k")) {
             embedded(project(":compiler-compat:${it.name}"))
         }
     }
 }
 
-for (c in arrayOf("apiElements", "runtimeElements")) {
-    configurations.named(c) { artifacts.removeIf { true } }
-    artifacts.add(c, shadowJar)
-}
+//for (c in arrayOf("apiElements", "runtimeElements")) {
+//    configurations.named(c) { artifacts.removeIf { true } }
+//    artifacts.add(c, shadowJar)
+//}
+
+
 
 buildConfig {
     useKotlinOutput {
         internalVisibility = true
     }
+}
+
+tasks.shadowJar {
+//    from(java.sourceSets.main.map { it.output })
+    configurations.set(setOf(embeddedClasspath))
+    
+    dependencies {
+        exclude(dependency("org.jetbrains:.*"))
+        exclude(dependency("org.intellij:.*"))
+        exclude(dependency("org.jetbrains.kotlin:.*"))
+        exclude(dependency("dev.drewhamilton.poko:.*"))
+    }
+    
+    duplicatesStrategy = DuplicatesStrategy.INCLUDE
+    mergeServiceFiles()
+    
+    relocate("dev.zacsweers.metro", "cb77.lang.plugins.kt.overloadedsetters.shaded.dev.zacsweers.metro")
 }
 
 tasks.test {
@@ -158,6 +177,32 @@ buildConfig {
     
     buildConfigField("String", "OPT_USECAMELCASE_CLINAME", "\"camelcase\"")
     buildConfigField("String", "OPT_SETTERPATTERN_CLINAME", "\"setter-pattern\"")
+}
+
+project.afterEvaluate {
+    plugins.withId("org.gradle.java-test-fixtures") {
+        val component = components["java"] as AdhocComponentWithVariants
+        
+        configurations.findByName("testFixturesApiElements")?.let {
+            component.withVariantsFromConfiguration(it) {
+                skip()
+            }
+        }
+        configurations.findByName("testFixturesRuntimeElements")?.let {
+            component.withVariantsFromConfiguration(it) {
+                skip()
+            }
+        }
+        
+        
+        // Workaround to not publish test fixtures sources added by com.vanniktech.maven.publish plugin
+        // TODO: Remove as soon as https://github.com/vanniktech/gradle-maven-publish-plugin/issues/779 closed
+        afterEvaluate {
+            configurations.findByName("testFixturesSourcesElements")?.let {
+                component.withVariantsFromConfiguration(it) { skip() }
+            }
+        }
+    }
 }
 
 publishing {

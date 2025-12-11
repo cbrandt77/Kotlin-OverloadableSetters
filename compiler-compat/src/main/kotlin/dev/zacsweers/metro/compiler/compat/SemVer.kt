@@ -71,7 +71,7 @@ class SemVer(stringRep: String) : Comparable<SemVer> {
 		return result
 	}
 	
-	data class Suffix(val prefix: String? = null, val number: Int = 0) {
+	data class Suffix(val prefix: String?, val number: Int) {
 		val isEmpty: Boolean
 			get() = prefix == null && number == 0
 		
@@ -119,9 +119,9 @@ class SemVer(stringRep: String) : Comparable<SemVer> {
 		
 		
 		companion object {
-			val EMPTY = Suffix()
+			val EMPTY = Suffix(null, 0)
 			
-			private val wordNumberRegex = Regex("^([a-zA-Z]*)(\\d*)$")
+			private val wordNumberRegex = Regex("^([a-zA-Z]+)?(\\d+)?$")
 			
 			/**
 			 * Compiler version prefixes that are _greater than_ their annotated version.
@@ -162,12 +162,12 @@ class SemVer(stringRep: String) : Comparable<SemVer> {
 			 */
 			operator fun invoke(stringRep: String): Suffix {
 				if (stringRep.isEmpty())
-					return Suffix();
+					return EMPTY;
 				
-				wordNumberRegex.matchEntire(stringRep)?.destructured?.let { (word, number) ->
-					return Suffix(word, number.toIntOrNull() ?: 0)
+				wordNumberRegex.matchEntire(stringRep)?.groupValues?.let { groups ->
+					return Suffix(groups[1], groups[2].toIntOrNull() ?: 0)
 				}
-				return Suffix(stringRep)
+				return Suffix(stringRep, 0)
 			}
 		}
 	}

@@ -81,10 +81,10 @@ dependencies {
     }
 }
 
-//for (c in arrayOf("apiElements", "runtimeElements")) {
-//    configurations.named(c) { artifacts.removeIf { true } }
-//    artifacts.add(c, shadowJar)
-//}
+for (c in arrayOf("apiElements", "runtimeElements")) {
+    configurations.named(c) { artifacts.removeIf { true } }
+    artifacts.add(c, tasks.shadowJar)
+}
 
 
 

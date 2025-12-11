@@ -6,7 +6,7 @@ package dev.zacsweers.metro.compiler.compat
  * This, no joke, was harder to understand and reason out than the rest of the compiler API.
  * There are just so many moving parts in versioning...
  */
-class SemVer(stringRep: String) {
+class SemVer(stringRep: String) : Comparable<SemVer> {
 	val version: IntArray // 0-4 are standard, but since they're all compared the same way, it doesn't really matter how many we have
 	
 	val suffix: Array<Suffix>
@@ -25,7 +25,7 @@ class SemVer(stringRep: String) {
 		version = IntArray(versionPart.size) { versionPart[it].toIntOrNull() ?: 0 }
 	}
 	
-	operator fun compareTo(other: SemVer): Int {
+	override operator fun compareTo(other: SemVer): Int {
 		val majorCompare = compareVersionNoSuffix(other)
 		if (majorCompare != 0)
 			return majorCompare;
@@ -71,9 +71,7 @@ class SemVer(stringRep: String) {
 		return result
 	}
 	
-	class Suffix(val prefix: String? = null, val number: Int = 0) {
-		
-		
+	data class Suffix(val prefix: String? = null, val number: Int = 0) {
 		val isEmpty: Boolean
 			get() = prefix == null && number == 0
 		

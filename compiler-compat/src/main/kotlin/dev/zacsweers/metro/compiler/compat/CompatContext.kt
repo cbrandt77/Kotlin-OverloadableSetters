@@ -142,7 +142,7 @@ interface CompatContext {
 	
 	
 	
-	private object CompatFactoryLoader {
+	object CompatFactoryLoader {
 		private fun loadFactories(): Sequence<Factory> {
 			return ServiceLoader.load(Factory::class.java, Factory::class.java.classLoader).asSequence()
 		}
@@ -150,7 +150,7 @@ interface CompatContext {
 		/**
 		 * Load [factories][Factory] and pick the highest compatible version (by [Factory.minVersion])
 		 */
-		private fun resolveFactory(
+		fun resolveFactory(
 			factories: Sequence<Factory> = loadFactories(),
 			pTestVersion: String? = null,
 		): Factory {
@@ -188,7 +188,9 @@ interface CompatContext {
 			var bestMatch: FactoryData? = null
 			
 			for (currentFactoryData in possibleFactories) {
-				val (_, compilerVersion, minSupported) = currentFactoryData
+				val (_, _compilerVersion, minSupported) = currentFactoryData
+				
+				val compilerVersion = testVersion ?: _compilerVersion
 				
 				// CHECKING COMPATIBILITY
 				val compilerVsMin = compilerVersion.compareVersionNoSuffix(minSupported)

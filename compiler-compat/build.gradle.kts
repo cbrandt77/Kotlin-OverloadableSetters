@@ -17,5 +17,11 @@ kotlin {
 dependencies {
   compileOnly(libs.kotlin.compiler)
   compileOnly(libs.kotlin.stdlib)
-  implementation(libs.semver)
+  
+  testImplementation(kotlin("test"))
+  testImplementation(libs.test.hamcrest)
+}
+
+tasks.test {
+  useJUnitPlatform()
 }

@@ -75,12 +75,16 @@ class SemVer(stringRep: String) : Comparable<SemVer> {
 		val isEmpty: Boolean
 			get() = prefix.isEmpty() && number == 0
 		
+		val isNumberOnly: Boolean // we consider number-only suffixes to be downstream
+			get() = prefix.isEmpty() && number != 0
+		
 		val hasWord: Boolean
 			get() = !prefix.isEmpty()
 		
-		val positionRelativeToNoPrefix = getPrefixPositioningRelativeToStable(prefix)
+		val prefixPosRelativeToRelease = getPrefixPositioningRelativeToStable(prefix)
 		
-		
+		val isDownstream: Boolean
+			get() = this.isNumberOnly || this.prefixPosRelativeToRelease > 0
 		
 		/**
 		 * Returns null if the two are different downstream branches, and therefore cannot be compared.
@@ -88,6 +92,9 @@ class SemVer(stringRep: String) : Comparable<SemVer> {
 		 * Else returns some "difference", where this being greater than the other is positive, equal to is 0, and lesser than is negative.
 		 *
 		 * The numbers themselves depend on the type of suffix; just the sign is important.
+		 *
+		 * Central thesis: a release has a single upstream branch with a coherent naming convention, but may have multitudes of downstream branches with different naming conventions
+		 * For example, 2.2.20 has both 2.2.20-dev-1111 and 2.2.20-ij100-24
 		 */
 		fun compareTo(other: Suffix): Int? {
 			// we can only compare their numbers if they have the same prefix, else the numbers are meaningless
@@ -101,14 +108,16 @@ class SemVer(stringRep: String) : Comparable<SemVer> {
 			2.2.20
 			2.2.20-beta1
 			 */
-			// now we just need to ensure they CAN BE COMPARED AT ALL
-			if (this.positionRelativeToNoPrefix > 0 && other.positionRelativeToNoPrefix > 0) {
-				// prefixes aren't equal but both are downstream -> incompatible
-				return null;
-			}
 			
-			// then it's just "worse are worse better are better"
-			return this.positionRelativeToNoPrefix - other.positionRelativeToNoPrefix
+			// prefixes aren't equal but both are downstream -> incompatible
+			if (this.isDownstream && other.isDownstream)
+				return null;
+			
+			// now we just have either:
+			//  - one downstream and one upstream from release, or
+			//  - both upstream from release
+			
+			return this.prefixPosRelativeToRelease - other.prefixPosRelativeToRelease
 		}
 		
 		
@@ -143,7 +152,7 @@ class SemVer(stringRep: String) : Comparable<SemVer> {
 			 * If 0, indicates not applicable
 			 */
 			fun getPrefixPositioningRelativeToStable(prefix: String?): Int {
-				if (prefix == null || prefix.isEmpty())
+				if (prefix == null)
 					return 0
 				val inAhead = prefix_Ahead.indexOf(prefix)
 				if (inAhead != -1)

@@ -108,7 +108,7 @@ tasks.shadowJar {
     duplicatesStrategy = DuplicatesStrategy.INCLUDE
     mergeServiceFiles()
     
-    relocate("dev.zacsweers.metro", "cb77.lang.plugins.kt.overloadedsetters.shaded.dev.zacsweers.metro")
+    relocate("dev.zacsweers.metro", "${project.group}.shaded.dev.zacsweers.metro")
 }
 
 tasks.test {

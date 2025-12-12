@@ -28,6 +28,12 @@ public class JvmDiagnosticTestGenerated extends AbstractJvmDiagnosticTest {
     runTest("compiler-plugin/testData/diagnostics/controlTest.kt");
   }
 
+  @Test
+  @TestMetadata("working.kt")
+  public void testWorking() {
+    runTest("compiler-plugin/testData/diagnostics/working.kt");
+  }
+
   @Nested
   @TestMetadata("compiler-plugin/testData/diagnostics/declaration")
   @TestDataPath("$PROJECT_ROOT")

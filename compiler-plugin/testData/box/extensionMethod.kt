@@ -6,7 +6,7 @@ class MyClass {
 }
 
 fun MyClass.`set-bar`(value: Int) {
-	bar = value.toString()
+	this.bar = value.toString()
 }
 
 fun box(): String {

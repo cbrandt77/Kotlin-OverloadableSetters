@@ -3,10 +3,9 @@
 // MODULE: lib
 // FILE: HasCustomSetters.kt
 package annotations;
-
 annotation class HasCustomSetters
 
-// FILE: MyClass.kt
+// FILE: foo.kt
 package foo;
 
 import annotations.HasCustomSetters
@@ -18,18 +17,6 @@ class MyClass {
 	fun `set-someProperty`(value: Int) {
 		someProperty = value.toString()
 	}
-	
-	fun someOtherMethod() {
-		println("Hi!")
-	}
-}
-
-fun MyClass.`set-someProperty`(value: Char) {
-	this.someProperty = value.toString()
-}
-
-fun MyClass.someExtMethod(value: String) {
-	println("value")
 }
 
 
@@ -38,12 +25,9 @@ fun MyClass.someExtMethod(value: String) {
 package bar;
 
 import foo.MyClass
-import foo.someExtMethod
 
 fun test() {
 	val x = MyClass()
 	x.someProperty = "a string"
 	x.someProperty = 2
-	x.someOtherMethod()
-	x.someExtMethod("hoi")
 }

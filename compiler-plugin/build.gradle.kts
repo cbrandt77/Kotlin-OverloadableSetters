@@ -86,6 +86,10 @@ for (c in arrayOf("apiElements", "runtimeElements")) {
     artifacts.add(c, tasks.shadowJar)
 }
 
+tasks.jar {
+    archiveClassifier = "noCompat"
+}
+
 
 
 buildConfig {
@@ -97,6 +101,8 @@ buildConfig {
 tasks.shadowJar {
 //    from(java.sourceSets.main.map { it.output })
     configurations.set(setOf(embeddedClasspath))
+    
+    archiveClassifier = ""
     
     dependencies {
         exclude(dependency("org.jetbrains:.*"))
@@ -179,31 +185,30 @@ buildConfig {
     buildConfigField("String", "OPT_SETTERPATTERN_CLINAME", "\"setter-pattern\"")
 }
 
-project.afterEvaluate {
-    plugins.withId("org.gradle.java-test-fixtures") {
-        val component = components["java"] as AdhocComponentWithVariants
-        
-        configurations.findByName("testFixturesApiElements")?.let {
-            component.withVariantsFromConfiguration(it) {
-                skip()
-            }
+plugins.withId("org.gradle.java-test-fixtures") {
+    val component = components["java"] as AdhocComponentWithVariants
+    
+    configurations.findByName("testFixturesApiElements")?.let {
+        component.withVariantsFromConfiguration(it) {
+            skip()
         }
-        configurations.findByName("testFixturesRuntimeElements")?.let {
-            component.withVariantsFromConfiguration(it) {
-                skip()
-            }
+    }
+    configurations.findByName("testFixturesRuntimeElements")?.let {
+        component.withVariantsFromConfiguration(it) {
+            skip()
         }
-        
-        
-        // Workaround to not publish test fixtures sources added by com.vanniktech.maven.publish plugin
-        // TODO: Remove as soon as https://github.com/vanniktech/gradle-maven-publish-plugin/issues/779 closed
-        afterEvaluate {
-            configurations.findByName("testFixturesSourcesElements")?.let {
-                component.withVariantsFromConfiguration(it) { skip() }
-            }
+    }
+    
+    
+    // Workaround to not publish test fixtures sources added by com.vanniktech.maven.publish plugin
+    // TODO: Remove as soon as https://github.com/vanniktech/gradle-maven-publish-plugin/issues/779 closed
+    afterEvaluate {
+        configurations.findByName("testFixturesSourcesElements")?.let {
+            component.withVariantsFromConfiguration(it) { skip() }
         }
     }
 }
+
 
 publishing {
     publications {

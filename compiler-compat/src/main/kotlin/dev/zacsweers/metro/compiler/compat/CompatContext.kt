@@ -12,6 +12,7 @@ import org.jetbrains.kotlin.fir.declarations.FirDeclaration
 import org.jetbrains.kotlin.fir.declarations.FirDeclarationOrigin
 import org.jetbrains.kotlin.fir.declarations.FirDeclarationStatus
 import org.jetbrains.kotlin.fir.declarations.FirFunction
+import org.jetbrains.kotlin.fir.declarations.FirProperty
 import org.jetbrains.kotlin.fir.declarations.FirTypeParameter
 import org.jetbrains.kotlin.fir.declarations.FirTypeParameterRef
 import org.jetbrains.kotlin.fir.declarations.FirValueParameter
@@ -484,6 +485,9 @@ interface CompatContext {
 			message = "In this specific version, they remove the default constructor and add a 'name' parameter."
 	)
 	fun newFirValueParameterSymbol(name: Name): FirValueParameterSymbol
+	
+	val FirProperty.isLocal: Boolean
+		get() = this.symbol.isLocal
 }
 
 @Suppress("UNUSED")

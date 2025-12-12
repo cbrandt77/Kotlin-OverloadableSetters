@@ -2,6 +2,7 @@ package cb77.lang.plugins.kt.overloadablesetters.fir.diagnostics.checkers.declar
 
 import cb77.lang.plugins.kt.overloadablesetters.fir.diagnostics.FirOverloadableSetters_ErrorTypes
 import cb77.lang.plugins.kt.overloadablesetters.util.supportsCustomSetters
+import dev.zacsweers.metro.compiler.compat.CompatContext.Companion.isLocal
 import org.jetbrains.kotlin.diagnostics.DiagnosticReporter
 import org.jetbrains.kotlin.diagnostics.reportOn
 import org.jetbrains.kotlin.fir.analysis.checkers.MppCheckerKind
@@ -9,7 +10,6 @@ import org.jetbrains.kotlin.fir.analysis.checkers.context.CheckerContext
 import org.jetbrains.kotlin.fir.analysis.checkers.declaration.FirPropertyChecker
 import org.jetbrains.kotlin.fir.declarations.FirDeclarationOrigin
 import org.jetbrains.kotlin.fir.declarations.FirProperty
-import org.jetbrains.kotlin.fir.declarations.isLocal
 import org.jetbrains.kotlin.fir.declarations.utils.isLocalInFunction
 
 /**

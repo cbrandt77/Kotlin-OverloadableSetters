@@ -51,14 +51,18 @@ myBuilder {
 
 <!-- TODO -->
 ### Gradle
-
+TODO
 
 
 ### Enable Diagnostics
 
-To see diagnostics directly in IntelliJ IDEA:
+To get linting hints directly in IntelliJ IDEA:
 - Enable K2 Mode for the Kotlin IntelliJ plugin.
-- Open the Registry
+- Open the IntelliJ Registry
+  1. In the toolbar, go to "Help > Edit Custom Properties"
+  2. Add `idea.is.internal=true`
+  3. Restart IDEA
+  4. Go to "Tools > Internal Actions > Registry"
 - Set the `kotlin.k2.only.bundled.compiler.plugins.enabled` entry to `false`.
 
 

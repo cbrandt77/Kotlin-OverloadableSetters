@@ -39,15 +39,13 @@ class FirSetterAssignmentAlterer(session: FirSession) : FirAssignExpressionAlter
 	}
 	
 	fun createNewFunctionCall(variableAssignment: FirVariableAssignment, targetProperty: FirPropertySymbol): FirStatement {
-		val setterName = Name.identifier(makeSetterName(targetProperty))
-		
 		return buildFunctionCall {
-			source = variableAssignment.source?.fakeElement(KtFakeSourceElementKind.AssignmentPluginAltered)
+			source = variableAssignment.lValue.source
 			explicitReceiver = variableAssignment.dispatchReceiver
 			argumentList = buildUnaryArgumentList(variableAssignment.rValue)
 			calleeReference = buildSimpleNamedReference {
 				source = variableAssignment.source
-				name = setterName
+				name = Name.identifier(makeSetterName(targetProperty))
 			}
 			origin = FirFunctionCallOrigin.Regular
 		}

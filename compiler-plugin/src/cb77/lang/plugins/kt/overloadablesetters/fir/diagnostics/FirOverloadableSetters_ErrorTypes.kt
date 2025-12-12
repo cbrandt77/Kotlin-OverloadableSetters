@@ -12,11 +12,9 @@ import org.jetbrains.kotlin.fir.symbols.impl.FirCallableSymbol
 import org.jetbrains.kotlin.fir.symbols.impl.FirPropertySymbol
 import org.jetbrains.kotlin.fir.types.ConeKotlinType
 import org.jetbrains.kotlin.name.Name
-import org.jetbrains.kotlin.psi.KtContextReceiverList
 import org.jetbrains.kotlin.psi.KtNamedFunction
 import org.jetbrains.kotlin.psi.KtParameter
 import org.jetbrains.kotlin.psi.KtProperty
-import org.jetbrains.kotlin.psi.KtTypeArgumentList
 
 
 object FirOverloadableSetters_ErrorTypes : KtDiagnosticsContainer() {
@@ -115,12 +113,19 @@ object FirOverloadableSetters_ErrorTypes : KtDiagnosticsContainer() {
 	val SETTER_DECL_MUST_RETURN_UNIT by error0<KtNamedFunction>(SourceElementPositioningStrategies.DECLARATION_RETURN_TYPE)
 	//endregion Setter Function Declarations
 	
+	
+	
 	//region Property Declaration
 	
 	/**
 	 * "HasCustomSetters" annotation is only applicable to `var`s, not `val`s.
 	 */
 	val SETTER_ANNOTATED_PROP_NOT_MUTABLE by error0<KtProperty>(SourceElementPositioningStrategies.VAL_OR_VAR_NODE)
+	
+	/**
+	 * "HasCustomSetters" annotation is only applicable to `var`s, not `val`s.
+	 */
+	val SETTER_ANNOTATED_PROP_INVALID by error1<KtProperty, String>(SourceElementPositioningStrategies.DEFAULT)
 	
 	//endregion Property Declaration
 	

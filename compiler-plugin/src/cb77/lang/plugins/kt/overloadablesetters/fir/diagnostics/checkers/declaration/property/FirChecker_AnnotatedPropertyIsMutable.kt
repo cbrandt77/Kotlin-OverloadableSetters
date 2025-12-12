@@ -9,6 +9,8 @@ import org.jetbrains.kotlin.fir.analysis.checkers.context.CheckerContext
 import org.jetbrains.kotlin.fir.analysis.checkers.declaration.FirPropertyChecker
 import org.jetbrains.kotlin.fir.declarations.FirDeclarationOrigin
 import org.jetbrains.kotlin.fir.declarations.FirProperty
+import org.jetbrains.kotlin.fir.declarations.isLocal
+import org.jetbrains.kotlin.fir.declarations.utils.isLocalInFunction
 
 /**
  * Make sure an annotated property is actually mutable
@@ -21,5 +23,7 @@ object FirChecker_AnnotatedPropertyIsMutable : FirPropertyChecker(MppCheckerKind
 		
 		if (!declaration.isVar)
 			reporter.reportOn(declaration.source, FirOverloadableSetters_ErrorTypes.SETTER_ANNOTATED_PROP_NOT_MUTABLE)
+		if (declaration.isLocal)
+			reporter.reportOn(declaration.source, FirOverloadableSetters_ErrorTypes.SETTER_ANNOTATED_PROP_INVALID, "local property")
 	}
 }

@@ -8,9 +8,12 @@ import org.jetbrains.kotlin.diagnostics.error1
 import org.jetbrains.kotlin.diagnostics.error2
 import org.jetbrains.kotlin.diagnostics.error3
 import org.jetbrains.kotlin.diagnostics.warning1
+import org.jetbrains.kotlin.diagnostics.warning2
 import org.jetbrains.kotlin.fir.symbols.impl.FirCallableSymbol
 import org.jetbrains.kotlin.fir.symbols.impl.FirPropertySymbol
 import org.jetbrains.kotlin.fir.types.ConeKotlinType
+import org.jetbrains.kotlin.name.CallableId
+import org.jetbrains.kotlin.name.ClassId
 import org.jetbrains.kotlin.name.Name
 import org.jetbrains.kotlin.psi.KtNamedFunction
 import org.jetbrains.kotlin.psi.KtParameter
@@ -26,10 +29,11 @@ object FirOverloadableSetters_ErrorTypes : KtDiagnosticsContainer() {
 	 *
 	 * Should be suppressable, since it might apply to functions that aren't supposed to be overloaded setters.
 	 *
-	 * @param _1 The name of what would be the target property, from the name of the function.
+	 * @param _1 The class that would be containing the property.
+	 * @param _2 The name of what would be the target property, from the name of the function.
 	 */
 	@Suppress("KDocUnresolvedReference")
-	val SETTER_DECL_TARGET_PROPERTY_NOT_FOUND by warning1<KtNamedFunction, String>(SourceElementPositioningStrategies.DECLARATION_NAME)
+	val SETTER_DECL_TARGET_PROPERTY_NOT_FOUND by warning2<KtNamedFunction, ClassId, Name>(SourceElementPositioningStrategies.DECLARATION_NAME)
 	
 	/**
 	 * For a function `set-bar`: the property "`bar`" exists in the scope, but is not marked as supporting custom setters.
@@ -123,7 +127,7 @@ object FirOverloadableSetters_ErrorTypes : KtDiagnosticsContainer() {
 	val SETTER_ANNOTATED_PROP_NOT_MUTABLE by error0<KtProperty>(SourceElementPositioningStrategies.VAL_OR_VAR_NODE)
 	
 	/**
-	 * "HasCustomSetters" annotation is only applicable to `var`s, not `val`s.
+	 * Misc "can't be placed on this item"
 	 */
 	val SETTER_ANNOTATED_PROP_INVALID by error1<KtProperty, String>(SourceElementPositioningStrategies.DEFAULT)
 	

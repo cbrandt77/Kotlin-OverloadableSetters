@@ -7,6 +7,7 @@ import org.jetbrains.kotlin.diagnostics.KtDiagnosticRenderers.VISIBILITY
 import org.jetbrains.kotlin.diagnostics.rendering.BaseDiagnosticRendererFactory
 import org.jetbrains.kotlin.fir.analysis.diagnostics.FirDiagnosticRenderers
 import org.jetbrains.kotlin.fir.analysis.diagnostics.FirDiagnosticRenderers.DECLARATION_NAME
+import org.jetbrains.kotlin.fir.analysis.diagnostics.FirDiagnosticRenderers.NAME_OF_DECLARATION_OR_FILE
 import org.jetbrains.kotlin.fir.analysis.diagnostics.FirDiagnosticRenderers.RENDER_TYPE
 
 object FirOverloadableSetters_ErrorMessages : BaseDiagnosticRendererFactory() {
@@ -63,6 +64,19 @@ object FirOverloadableSetters_ErrorMessages : BaseDiagnosticRendererFactory() {
 					FirOverloadableSetters_ErrorTypes.SETTER_ANNOTATED_PROP_INVALID,
 					"''@HasCustomSetters'' inapplicable to ''{0}''",
 					TO_STRING
+			)
+			
+			put(
+					FirOverloadableSetters_ErrorTypes.SETTER_DECL_TARGET_PROPERTY_NOT_FOUND,
+					"Setter target property ''{0}#{1}'' not found in scope.",
+					NAME_OF_DECLARATION_OR_FILE,
+					TO_STRING
+			)
+			
+			put(
+					FirOverloadableSetters_ErrorTypes.SETTER_DECL_TARGET_PROPERTY_UNSUPPORTED,
+					"Setter target property ''{0}'' does not support custom setters.",
+					DECLARATION_NAME
 			)
 		}
 	}

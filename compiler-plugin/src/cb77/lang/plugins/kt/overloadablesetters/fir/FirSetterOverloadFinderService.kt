@@ -5,6 +5,7 @@ import org.jetbrains.kotlin.fir.caches.FirCache
 import org.jetbrains.kotlin.fir.caches.firCachesFactory
 import org.jetbrains.kotlin.fir.caches.getValue
 import org.jetbrains.kotlin.fir.declarations.hasAnnotation
+import org.jetbrains.kotlin.fir.declarations.utils.isOverride
 import org.jetbrains.kotlin.fir.extensions.FirExtensionSessionComponent
 import org.jetbrains.kotlin.fir.extensions.predicateBasedProvider
 import org.jetbrains.kotlin.fir.symbols.impl.FirPropertySymbol
@@ -24,7 +25,7 @@ class FirSetterOverloadFinderService(pSession: FirSession, val propertyAnnotatio
 	}
 	
 	private val cache_propertySupportsOverloadedSetters: FirCache<FirPropertySymbol, Boolean, Nothing?> = session.firCachesFactory.createCache { symbol, _ ->
-		session.predicateBasedProvider.matches(session.setterOverloadPredicates.hasCustomSetters, symbol)
+		propertyAnnotationIds.any { symbol.hasAnnotation(it, session) }
 	}
 	
 	fun propertySupportsOverloadedSetters(symbol: FirPropertySymbol): Boolean {

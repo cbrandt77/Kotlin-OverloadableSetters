@@ -2,6 +2,14 @@ package testproject
 
 import cb77.lang.plugins.kt.overloadablesetters.HasCustomSetters
 
+open class Parent {
+
+}
+
+class Child {
+
+}
+
 class SetterTester {
 	@HasCustomSetters
 	var foo: String = ""

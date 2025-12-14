@@ -77,7 +77,7 @@ class FirSetterDefaultSetterGenerator(session: FirSession) : FirDeclarationGener
 	private val annotatedPropertiesByClass: FirCache<FirClassSymbol<*>, Map<Name, FirPropertySymbol>, Nothing?> = session.firCachesFactory.createCache { owningClass, _ ->
 		calledFromCache.set(true)
 		
-		// Only take the properties declared inside this class, not a full scope search. Any supertypes should autogenrate their _own_ `set-bar` functions.
+		// Only take the properties declared inside this class, not a full scope search. Any supertypes should autogenerate their _own_ `set-bar`(DefaultType) functions.
 		val ret = owningClass.declaredProperties(session)
 			.filter { it.supportsCustomSetters(session) }
 			.associateBy { Name.identifier(makeSetterName(it)) }

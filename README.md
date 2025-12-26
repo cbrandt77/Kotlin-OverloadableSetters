@@ -38,7 +38,7 @@ fun main() {
 }
 ```
 
-This is primarily useful for builders:
+This is primarily useful for builders and DSLs:
 ```kotlin
 myBuilder { 
     defaultValue = "a literal string"
@@ -47,16 +47,66 @@ myBuilder {
 }
 ```
 
+### Notes About Inheritance
+
+Setters for an inherited property may also be resolved on subclasses, 
+as long as the property is annotated either on the type or above it on the inheritance hierarchy.
+
+```kotlin
+interface Parent {
+    @HasCustomSetters
+    var parentProperty: String
+}
+
+class Child1 : Parent {
+    fun `set-parentProperty`(value: Int) { 
+        parentProperty = value.toString()
+    }
+}
+
+class Child2 : Parent {
+    fun `set-parentProperty`(value: Int) {
+        throw IllegalArgumentException("No Ints Allowed")
+    }
+}
+
+Child1().parentProperty = 2 // Calls `Child1#set-parentProperty`
+Child2().parentProperty = 2 // Calls `Child2#set-parentProperty`
+
+
+interface UnannotedParent {
+    var unannotatedProperty: String
+}
+
+class Child : UnannotatedParent { 
+    @HasCustomSetters
+    override var unannotatedProperty: String = ""
+}
+
+fun Child.`set-unannotatedProperty`(value: Int) {
+	this.unannotatedProperty = value.toString()
+}
+
+Child().unannotatedProperty = 2 // Works
+(Child() as Parent).unannotatedProperty = 2 // ERROR: Not annotated
+```
+
+This isn't unique to setters, and is a consideration when creating _any_ method.
+
 ## Installation
 
-<!-- TODO -->
 ### Gradle
-TODO
+Add the following to your plugins block:
+```kotlin
+plugins {
+  id("cb77.lang.plugins.kt.overloadablesetters")
+}
+```
 
 
 ### Enable Diagnostics
 
-To get linting hints directly in IntelliJ IDEA:
+To get hints directly in IntelliJ IDEA, including linking to custom setters, validating signatures, and more:
 - Enable K2 Mode for the Kotlin IntelliJ plugin.
 - Open the IntelliJ Registry
   1. In the toolbar, go to "Help > Edit Custom Properties"
@@ -65,5 +115,6 @@ To get linting hints directly in IntelliJ IDEA:
   4. Go to "Tools > Internal Actions > Registry"
 - Set the `kotlin.k2.only.bundled.compiler.plugins.enabled` entry to `false`.
 
+Note that diagnostics do not work on IDEA 2025.2 due to a compiler bug fixed in 2025.3. 
 
 

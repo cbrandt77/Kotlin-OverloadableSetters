@@ -5,7 +5,7 @@ import cb77.lang.plugins.kt.overloadablesetters.util.findPropertyByName
 import cb77.lang.plugins.kt.overloadablesetters.util.getPropertyNameFromSetterName
 import cb77.lang.plugins.kt.overloadablesetters.util.getReceiverClass
 import cb77.lang.plugins.kt.overloadablesetters.util.isVisibleFrom
-import cb77.lang.plugins.kt.overloadablesetters.util.supportsCustomSetters
+import cb77.lang.plugins.kt.overloadablesetters.fir.shouldRemapPropertySets
 import org.jetbrains.kotlin.descriptors.Visibility
 import org.jetbrains.kotlin.diagnostics.DiagnosticReporter
 import org.jetbrains.kotlin.diagnostics.reportOn
@@ -16,13 +16,11 @@ import org.jetbrains.kotlin.fir.declarations.FirDeclarationOrigin
 import org.jetbrains.kotlin.fir.declarations.FirFunction
 import org.jetbrains.kotlin.fir.declarations.utils.nameOrSpecialName
 import org.jetbrains.kotlin.fir.declarations.utils.visibility
-import org.jetbrains.kotlin.fir.lightTree.converter.nameAsSafeName
 import org.jetbrains.kotlin.fir.symbols.impl.FirClassSymbol
 import org.jetbrains.kotlin.fir.symbols.impl.FirPropertySymbol
 import org.jetbrains.kotlin.fir.types.coneType
 import org.jetbrains.kotlin.fir.types.coneTypeOrNull
 import org.jetbrains.kotlin.fir.types.isUnit
-import org.jetbrains.kotlin.name.CallableId
 import org.jetbrains.kotlin.name.Name
 
 object FirChecker_SetterFunctionLinter : FirFunctionChecker(MppCheckerKind.Common) {
@@ -45,7 +43,7 @@ object FirChecker_SetterFunctionLinter : FirFunctionChecker(MppCheckerKind.Commo
 				return;
 			}
 			
-			val supportedFoo = allFoo.filter { it.supportsCustomSetters(ctx.session) }
+			val supportedFoo = allFoo.filter { it.shouldRemapPropertySets(ctx.session) }
 			if (supportedFoo.isEmpty()) {
 				reporter.reportOn(declaration.source, FirOverloadableSetters_ErrorTypes.SETTER_DECL_TARGET_PROPERTY_UNSUPPORTED, allFoo[0])
 				return;

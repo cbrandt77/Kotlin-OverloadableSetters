@@ -1,8 +1,8 @@
 package cb77.lang.plugins.kt.overloadablesetters.util
 
 import cb77.lang.plugins.kt.overloadablesetters.fir.setterOverloadFinderService
+import dev.zacsweers.metro.compiler.compat.ext.toRegularClassSymbol
 import org.jetbrains.kotlin.fir.FirSession
-import org.jetbrains.kotlin.fir.analysis.checkers.toRegularClassSymbol
 import org.jetbrains.kotlin.fir.declarations.FirFunction
 import org.jetbrains.kotlin.fir.declarations.FirResolvePhase
 import org.jetbrains.kotlin.fir.declarations.processAllDeclaredCallables
@@ -16,10 +16,6 @@ import org.jetbrains.kotlin.fir.symbols.impl.FirPropertySymbol
 import org.jetbrains.kotlin.fir.symbols.impl.FirRegularClassSymbol
 import org.jetbrains.kotlin.name.Name
 
-
-fun FirPropertySymbol.supportsCustomSetters(session: FirSession): Boolean {
-	return session.setterOverloadFinderService.propertySupportsOverloadedSetters(this)
-}
 
 fun FirClassSymbol<*>.getDeclaredAndInheritedCallables(session: FirSession, memberRequiredPhase: FirResolvePhase = FirResolvePhase.STATUS): Sequence<FirCallableSymbol<*>> {
 	val superTypeSequence = this.getSuperTypes(session)

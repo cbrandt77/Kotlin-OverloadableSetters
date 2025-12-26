@@ -3,11 +3,25 @@ package testproject
 import cb77.lang.plugins.kt.overloadablesetters.HasCustomSetters
 
 open class Parent {
-
+	
+	open var parentProp: Int = 4
+	
+	open fun `set-parentProp`(value: String) {
+	
+	}
 }
 
-class Child {
+class Child : Parent() {
+	override var parentProp: Int = 0
+		get() = 5
+	
+	override fun `set-parentProp`(value: String) {
+	
+	}
+}
 
+fun Child.`set-parentProp`(value: Boolean) {
+	this.parentProp = if (value) 1 else 0
 }
 
 class SetterTester {

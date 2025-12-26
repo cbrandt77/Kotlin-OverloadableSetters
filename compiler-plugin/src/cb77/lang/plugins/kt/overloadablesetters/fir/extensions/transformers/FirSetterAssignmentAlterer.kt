@@ -1,9 +1,7 @@
 package cb77.lang.plugins.kt.overloadablesetters.fir.extensions.transformers
 
 import cb77.lang.plugins.kt.overloadablesetters.util.makeSetterName
-import cb77.lang.plugins.kt.overloadablesetters.util.supportsCustomSetters
-import dev.zacsweers.metro.compiler.compat.CompatContext.Companion.fakeElement
-import org.jetbrains.kotlin.KtFakeSourceElementKind
+import cb77.lang.plugins.kt.overloadablesetters.fir.shouldRemapPropertySets
 import org.jetbrains.kotlin.fir.FirSession
 import org.jetbrains.kotlin.fir.declarations.DirectDeclarationsAccess
 import org.jetbrains.kotlin.fir.expressions.FirFunctionCallOrigin
@@ -29,10 +27,10 @@ class FirSetterAssignmentAlterer(session: FirSession) : FirAssignExpressionAlter
 	 * Only transforms class or extension properties that are mutable and annotated with [HasCustomSetters]
 	 */
 	override fun transformVariableAssignment(variableAssignment: FirVariableAssignment): FirStatement? {
-		val lSymbol: FirPropertySymbol = variableAssignment.calleeReference?.toResolvedVariableSymbol()
-			.takeIf {
-				it is FirPropertySymbol && it.isVar && !it.isLocal && it.supportsCustomSetters(session)
-			} as FirPropertySymbol? ?: return null;
+		val lSymbol: FirPropertySymbol = (variableAssignment.calleeReference?.toResolvedVariableSymbol() as? FirPropertySymbol)
+			?.takeIf {
+				it.isVar && !it.isLocal && it.shouldRemapPropertySets(session)
+			} ?: return null;
 		
 		// can't get the type of the rvalue during this phase. need to just check if it supports custom setters and use the setBar method blindly
 		return createNewFunctionCall(variableAssignment, lSymbol)

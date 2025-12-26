@@ -229,7 +229,7 @@ if [ -n "$DELEGATES_TO" ]; then
   cat > "$MODULE_DIR/build.gradle.kts" << EOF
 // Copyright (C) 2025 Zac Sweers
 // SPDX-License-Identifier: Apache-2.0
-plugins { alias(libs.plugins.kotlin.jvm) }
+plugins { id("kotlin-jvm-convention") }
 
 kotlin {
   compilerOptions {
@@ -255,7 +255,7 @@ else
   cat > "$MODULE_DIR/build.gradle.kts" << EOF
 // Copyright (C) 2025 Zac Sweers
 // SPDX-License-Identifier: Apache-2.0
-plugins { alias(libs.plugins.kotlin.jvm) }
+plugins { id("kotlin-jvm-convention") }
 
 kotlin {
   compilerOptions {

@@ -1,23 +1,17 @@
 package cb77.lang.plugins.kt.overloadablesetters.fir.extensions.generators
 
-import cb77.lang.plugins.kt.overloadablesetters.util.makeSetterName
-import cb77.lang.plugins.kt.overloadablesetters.util.supportsCustomSetters
+import cb77.lang.plugins.kt.overloadablesetters.fir.setterOverloadFinderService
 import dev.zacsweers.metro.compiler.compat.CompatContext
+import dev.zacsweers.metro.compiler.compat.CompatContext.Companion.fakeElement
 import org.jetbrains.kotlin.GeneratedDeclarationKey
 import org.jetbrains.kotlin.KtFakeSourceElementKind
 import org.jetbrains.kotlin.descriptors.Modality
 import org.jetbrains.kotlin.descriptors.Visibilities
-import org.jetbrains.kotlin.fakeElement
 import org.jetbrains.kotlin.fir.FirSession
-import org.jetbrains.kotlin.fir.caches.FirCache
-import org.jetbrains.kotlin.fir.caches.firCachesFactory
-import org.jetbrains.kotlin.fir.caches.getValue
-import org.jetbrains.kotlin.fir.declarations.FirDeclarationOrigin
 import org.jetbrains.kotlin.fir.declarations.FirResolvePhase
 import org.jetbrains.kotlin.fir.declarations.FirSimpleFunction
 import org.jetbrains.kotlin.fir.declarations.builder.buildSimpleFunction
 import org.jetbrains.kotlin.fir.declarations.builder.buildValueParameter
-import org.jetbrains.kotlin.fir.declarations.declaredProperties
 import org.jetbrains.kotlin.fir.declarations.impl.FirResolvedDeclarationStatusImpl
 import org.jetbrains.kotlin.fir.declarations.origin
 import org.jetbrains.kotlin.fir.declarations.utils.canNarrowDownGetterType
@@ -30,7 +24,6 @@ import org.jetbrains.kotlin.fir.expressions.builder.buildVariableAssignment
 import org.jetbrains.kotlin.fir.expressions.impl.FirSingleExpressionBlock
 import org.jetbrains.kotlin.fir.extensions.FirDeclarationGenerationExtension
 import org.jetbrains.kotlin.fir.extensions.MemberGenerationContext
-import org.jetbrains.kotlin.fir.extensions.predicateBasedProvider
 import org.jetbrains.kotlin.fir.moduleData
 import org.jetbrains.kotlin.fir.references.builder.buildImplicitThisReference
 import org.jetbrains.kotlin.fir.references.builder.buildResolvedNamedReference
@@ -50,7 +43,6 @@ import org.jetbrains.kotlin.name.SpecialNames
 import org.jetbrains.kotlin.name.StandardClassIds
 import org.jetbrains.kotlin.types.ConstantValueKind
 import org.jetbrains.kotlin.utils.addToStdlib.runIf
-import org.jetbrains.kotlin.utils.mapToSetOrEmpty
 
 /**
  * Adds a `set-{propName}` function with the property's original type to the class,
@@ -59,67 +51,34 @@ import org.jetbrains.kotlin.utils.mapToSetOrEmpty
 class FirSetterDefaultSetterGenerator(session: FirSession) : FirDeclarationGenerationExtension(session) {
 	object OverloadableSettersDeclarationKey : GeneratedDeclarationKey()
 	
-	
-	/**
-	 * Given a class, gets all of its properties that support custom setters, mapped to their setter names.
-	 *
-	 * For example, given:
-	 * ```
-	 * class Foo {
-	 *    @HasCustomSetters
-	 *    val bar: Int
-	 * }
-	 * ```
-	 * Calling `cache.get(Foo::class)` would essentially return `{ "setBar": Foo::bar }`.
-	 *
-	 * The map is because we can't just do the functions, we have to first say what the names of the functions we want to emit are and THEN do the functions, which necessitates two lookups per property.
-	 */
-	private val annotatedPropertiesByClass: FirCache<FirClassSymbol<*>, Map<Name, FirPropertySymbol>, Nothing?> = session.firCachesFactory.createCache { owningClass, _ ->
-		calledFromCache.set(true)
-		
-		// Only take the properties declared inside this class, not a full scope search. Any supertypes should autogenerate their _own_ `set-bar`(DefaultType) functions.
-		val ret = owningClass.declaredProperties(session)
-			.filter { it.supportsCustomSetters(session) }
-			.associateBy { Name.identifier(makeSetterName(it)) }
-		
-		calledFromCache.set(false)
-		
-		return@createCache ret
-	}
-	
-	/**
-	 * Prevent infinite recursion from `cache#getValue` -> `owningClass#declaredProperties` -> `getCallableNamesForClass` -> `cache#getValue`
-	 */
-	private val calledFromCache: ThreadLocal<Boolean> = ThreadLocal.withInitial { false }
-	
 	override fun getCallableNamesForClass(classSymbol: FirClassSymbol<*>, context: MemberGenerationContext): Set<Name> {
-		if (calledFromCache.get())
-			return emptySet()
-		
-		val owningClass = context.owner
-		return annotatedPropertiesByClass.getValue(owningClass)
-			.values
-			.mapToSetOrEmpty { Name.identifier(makeSetterName(it.name)) }
+		return getDefaultSettersForClass(classSymbol.classId)
+		       ?: emptySet()
 	}
 	
 	override fun generateFunctions(callableId: CallableId, context: MemberGenerationContext?): List<FirNamedFunctionSymbol> {
-		val classId = callableId.classId
-		              ?: return emptyList()
-		
 		val owningClass = context?.owner
 		                  ?: return emptyList()
 		
-		val propertyForSetter = annotatedPropertiesByClass.getValue(owningClass)?.get(callableId.callableName)
-		                        ?: return emptyList()
+		val propForSetter = getPropertyForSetter(callableId)
+		                    ?: return emptyList()
 		
-		return listOf(makeDefaultSetterStub(owningClass, propertyForSetter, callableId).symbol)
+		return listOf(makeDefaultSetterStub(owningClass, propForSetter, callableId).symbol)
+	}
+	
+	private fun getDefaultSettersForClass(owner: ClassId): Set<Name>? {
+		return session.setterOverloadFinderService.allAnnotatedProperties[owner]?.keys
+	}
+	
+	private fun getPropertyForSetter(id: CallableId): FirPropertySymbol? {
+		val classid = id.classId ?: return null;
+		return session.setterOverloadFinderService.allAnnotatedProperties[classid]?.get(id.callableName)
 	}
 	
 	/**
 	 * Given `bar: String`, make a `setBar(String)` function with JvmName "$$OverloadableSetters$setBar" to not conflict with the actual property setter
 	 */
 	private fun makeDefaultSetterStub(owningClass: FirClassLikeSymbol<*>, prop: FirPropertySymbol, callableId: CallableId): FirSimpleFunction {
-		
 		val ourSource = prop.source?.fakeElement(KtFakeSourceElementKind.PluginGenerated)
 		return buildSimpleFunction {
 			resolvePhase = FirResolvePhase.BODY_RESOLVE

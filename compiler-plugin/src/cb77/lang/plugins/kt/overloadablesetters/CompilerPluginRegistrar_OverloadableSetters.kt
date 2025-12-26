@@ -1,6 +1,7 @@
 package cb77.lang.plugins.kt.overloadablesetters
 
 import cb77.lang.plugins.kt.overloadablesetters.fir.FirRegistrar_OverloadableSetters
+import dev.zacsweers.metro.compiler.compat.CompatContext
 import org.jetbrains.kotlin.backend.common.extensions.IrGenerationExtension
 import org.jetbrains.kotlin.compiler.plugin.CompilerPluginRegistrar
 import org.jetbrains.kotlin.config.CompilerConfiguration

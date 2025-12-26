@@ -40,12 +40,11 @@ import org.jetbrains.kotlin.ir.types.IrTypeSystemContext
 import org.jetbrains.kotlin.name.CallableId
 import org.jetbrains.kotlin.name.Name
 import java.io.FileNotFoundException
-import java.util.LinkedList
 import java.util.ServiceLoader
 
 interface CompatContext {
 	companion object : CompatContext {
-		// use explicit delegation on an object so intellisense will actually detect the extension methods
+		// use explicit delegation on an object so autocomplete will show the extension methods
 		private val inst: CompatContext by lazy {
 			CompatFactoryLoader.create()
 		}
@@ -485,9 +484,6 @@ interface CompatContext {
 			message = "In this specific version, they remove the default constructor and add a 'name' parameter."
 	)
 	fun newFirValueParameterSymbol(name: Name): FirValueParameterSymbol
-	
-	val FirProperty.isLocal: Boolean
-		get() = this.symbol.isLocal
 }
 
 @Suppress("UNUSED")

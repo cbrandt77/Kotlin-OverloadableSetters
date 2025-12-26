@@ -8,8 +8,8 @@ plugins {
 }
 
 allprojects {
-    group = "cb77.lang.plugins.kt.overloadablesetters"
-    version = "1.0-SNAPSHOT"
+    group = PROJ_GROUP
+    version = PROJ_VERSION
 }
 
 tasks.register("publishToMavenLocal") {

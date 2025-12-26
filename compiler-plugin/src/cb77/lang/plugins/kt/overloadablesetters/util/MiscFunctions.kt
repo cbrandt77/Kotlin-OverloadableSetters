@@ -35,6 +35,10 @@ fun makeSetterName(propertyName: String): String {
 	return "set-${propertyName}"
 }
 
+fun makeSetterNameId(propertyName: Name): Name {
+	return Name.identifier(makeSetterName(propertyName))
+}
+
 /**
  * Matches the setter format. Group $1 = raw name of the target property
  */

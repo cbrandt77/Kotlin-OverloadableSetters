@@ -22,6 +22,6 @@ class NonNullAssert<T : Any>(val matcher: Matcher<T>) : BaseMatcher<T?>() {
 	}
 }
 
-fun <T : Any> notNullAnd(matcher: Matcher<T>) : Matcher<T?> {
+fun <T : Any> notNullAnd(matcher: Matcher<in T>) : Matcher<in T?> {
 	return NonNullAssert(matcher)
 }

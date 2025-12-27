@@ -5,6 +5,7 @@ import dev.zacsweers.metro.compiler.compat.CompatContext
 import dev.zacsweers.metro.compiler.compat.CompatContext.Companion.fakeElement
 import org.jetbrains.kotlin.GeneratedDeclarationKey
 import org.jetbrains.kotlin.KtFakeSourceElementKind
+import org.jetbrains.kotlin.builtins.StandardNames
 import org.jetbrains.kotlin.descriptors.Modality
 import org.jetbrains.kotlin.descriptors.Visibilities
 import org.jetbrains.kotlin.fir.FirSession
@@ -17,6 +18,7 @@ import org.jetbrains.kotlin.fir.declarations.origin
 import org.jetbrains.kotlin.fir.declarations.utils.canNarrowDownGetterType
 import org.jetbrains.kotlin.fir.expressions.builder.buildAnnotation
 import org.jetbrains.kotlin.fir.expressions.builder.buildAnnotationArgumentMapping
+import org.jetbrains.kotlin.fir.expressions.builder.buildEnumEntryDeserializedAccessExpression
 import org.jetbrains.kotlin.fir.expressions.builder.buildLiteralExpression
 import org.jetbrains.kotlin.fir.expressions.builder.buildPropertyAccessExpression
 import org.jetbrains.kotlin.fir.expressions.builder.buildThisReceiverExpression
@@ -41,6 +43,7 @@ import org.jetbrains.kotlin.name.ClassId
 import org.jetbrains.kotlin.name.Name
 import org.jetbrains.kotlin.name.SpecialNames
 import org.jetbrains.kotlin.name.StandardClassIds
+import org.jetbrains.kotlin.resolve.deprecation.DeprecationLevelValue
 import org.jetbrains.kotlin.types.ConstantValueKind
 import org.jetbrains.kotlin.utils.addToStdlib.runIf
 
@@ -100,34 +103,19 @@ class FirSetterDefaultSetterGenerator(session: FirSession) : FirDeclarationGener
 			
 			returnTypeRef = session.builtinTypes.unitType
 			
-			annotations += listOf(
-					// JvmName TODO figure out how to mangle names
-					buildAnnotation {
-						source = ourSource
-						annotationTypeRef = buildResolvedTypeRef {
-							source = ourSource
-							coneType = StandardClassIds.Annotations.jvmName.constructClassLikeType()
-						}
-						argumentMapping = buildAnnotationArgumentMapping {
-							mapping[StandardClassIds.Annotations.ParameterNames.parameterNameName] = buildLiteralExpression(ourSource, ConstantValueKind.String, getJvmNameForSetter(callableId.callableName.asString()), setType=true)
-						}
-					},
-//					// Deprecated(HIDDEN) TODO figure out how to hide the declaration from IDE autocomplete
-//					buildAnnotation {
-//						source = ourSource
-//						annotationTypeRef = buildResolvedTypeRef {
-//							source = ourSource
-//							coneType = StandardClassIds.Annotations.Deprecated.constructClassLikeType()
-//						}
-//						argumentMapping = buildAnnotationArgumentMapping {
-//							mapping[StandardClassIds.Annotations.ParameterNames.deprecatedMessage] = buildLiteralExpression(ourSource, ConstantValueKind.String, "Use actual property setter", setType=true)
-//							mapping[StandardClassIds.Annotations.ParameterNames.deprecatedLevel] = buildEnumEntryDeserializedAccessExpression {
-//								enumClassId = StandardClassIds.DeprecationLevel
-//								enumEntryName = Name.identifier(DeprecationLevelValue.HIDDEN.name)
-//							}
-//						}
-//					}
-			)
+			// JvmName to not conflict with actual property's setter TODO figure out how to mangle names
+			annotations += buildAnnotation {
+				source = ourSource
+				annotationTypeRef = buildResolvedTypeRef {
+					source = ourSource
+					coneType = StandardClassIds.Annotations.jvmName.constructClassLikeType()
+				}
+				argumentMapping = buildAnnotationArgumentMapping {
+					mapping[StandardClassIds.Annotations.ParameterNames.parameterNameName] = buildLiteralExpression(ourSource, ConstantValueKind.String, getJvmNameForSetter(callableId.callableName.asString()), setType=true)
+				}
+			}
+			
+			val paramName = StandardNames.DEFAULT_VALUE_PARAMETER
 			
 			val parameter = buildValueParameter {
 				source = ourSource
@@ -135,8 +123,8 @@ class FirSetterDefaultSetterGenerator(session: FirSession) : FirDeclarationGener
 				moduleData = session.moduleData
 				origin = OverloadableSettersDeclarationKey.origin
 				returnTypeRef = prop.resolvedReturnTypeRef
-				name = SpecialNames.IMPLICIT_SET_PARAMETER
-				symbol = CompatContext.newFirValueParameterSymbol(SpecialNames.IMPLICIT_SET_PARAMETER)
+				name = paramName
+				symbol = CompatContext.newFirValueParameterSymbol(paramName)
 				
 				isCrossinline = false
 				isNoinline = false
@@ -166,7 +154,7 @@ class FirSetterDefaultSetterGenerator(session: FirSession) : FirDeclarationGener
 						source = ourSource
 						calleeReference = buildResolvedNamedReference {
 							source = ourSource
-							name = SpecialNames.IMPLICIT_SET_PARAMETER
+							name = parameter.name
 							resolvedSymbol = parameter.symbol
 						}
 						coneTypeOrNull = parameter.returnTypeRef.coneTypeOrNull

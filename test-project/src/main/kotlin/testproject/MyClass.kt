@@ -5,19 +5,11 @@ import cb77.lang.plugins.kt.overloadablesetters.HasCustomSetters
 open class Parent {
 	@HasCustomSetters
 	open var parentProp: Int = 4
-	
-	open fun `set-parentProp`(value: String) {
-	
-	}
 }
 
 class Child : Parent() {
 	override var parentProp: Int = 0
 		get() = 5
-	
-	override fun `set-parentProp`(value: String) {
-	
-	}
 }
 
 fun Child.`set-parentProp`(value: Boolean) {
@@ -27,6 +19,10 @@ fun Child.`set-parentProp`(value: Boolean) {
 class SetterTester {
 	@HasCustomSetters
 	var foo: String = ""
+	
+	fun x() {
+	
+	}
 }
 
 fun SetterTester.`set-foo`(value: Int) {
@@ -35,8 +31,7 @@ fun SetterTester.`set-foo`(value: Int) {
 
 fun foo() {
 	val x = SetterTester()
-	x.foo = ""
-	x.foo = 2
+	x.`set-foo`("")
 }
 
 fun main() {

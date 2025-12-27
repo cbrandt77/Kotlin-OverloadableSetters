@@ -27,16 +27,16 @@ FILE: MyClass.kt
             private get(): R|kotlin/String|
             private set(value: R|kotlin/String|): R|kotlin/Unit|
 
-        @R|kotlin/jvm/JvmName|(name = String($$OverloadedSetters$set-privateSuperMember)) public final fun set-privateSuperMember(<set-?>: R|kotlin/String|): R|kotlin/Unit| {
-            this@R|foo/MySuperClass|.R|foo/MySuperClass.privateSuperMember| = R|<local>/<set-?>|
+        @R|kotlin/jvm/JvmName|(name = String($$OverloadedSetters$set-privateSuperMember)) public final fun set-privateSuperMember(value: R|kotlin/String|): R|kotlin/Unit| {
+            this@R|foo/MySuperClass|.R|foo/MySuperClass.privateSuperMember| = R|<local>/value|
         }
 
-        @R|kotlin/jvm/JvmName|(name = String($$OverloadedSetters$set-protectedSuperMember)) public final fun set-protectedSuperMember(<set-?>: R|kotlin/String|): R|kotlin/Unit| {
-            this@R|foo/MySuperClass|.R|foo/MySuperClass.protectedSuperMember| = R|<local>/<set-?>|
+        @R|kotlin/jvm/JvmName|(name = String($$OverloadedSetters$set-protectedSuperMember)) public final fun set-protectedSuperMember(value: R|kotlin/String|): R|kotlin/Unit| {
+            this@R|foo/MySuperClass|.R|foo/MySuperClass.protectedSuperMember| = R|<local>/value|
         }
 
-        @R|kotlin/jvm/JvmName|(name = String($$OverloadedSetters$set-publicSuperMember)) public final fun set-publicSuperMember(<set-?>: R|kotlin/String|): R|kotlin/Unit| {
-            this@R|foo/MySuperClass|.R|foo/MySuperClass.publicSuperMember| = R|<local>/<set-?>|
+        @R|kotlin/jvm/JvmName|(name = String($$OverloadedSetters$set-publicSuperMember)) public final fun set-publicSuperMember(value: R|kotlin/String|): R|kotlin/Unit| {
+            this@R|foo/MySuperClass|.R|foo/MySuperClass.publicSuperMember| = R|<local>/value|
         }
 
     }

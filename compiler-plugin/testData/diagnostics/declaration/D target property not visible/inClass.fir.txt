@@ -19,8 +19,8 @@ FILE: MyClass.kt
             private get(): R|kotlin/String|
             private set(value: R|kotlin/String|): R|kotlin/Unit|
 
-        @R|kotlin/jvm/JvmName|(name = String($$OverloadedSetters$set-someProperty)) public final fun set-someProperty(<set-?>: R|kotlin/String|): R|kotlin/Unit| {
-            this@R|foo/MySuperClass|.R|foo/MySuperClass.someProperty| = R|<local>/<set-?>|
+        @R|kotlin/jvm/JvmName|(name = String($$OverloadedSetters$set-someProperty)) public final fun set-someProperty(value: R|kotlin/String|): R|kotlin/Unit| {
+            this@R|foo/MySuperClass|.R|foo/MySuperClass.someProperty| = R|<local>/value|
         }
 
     }

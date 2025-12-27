@@ -1,7 +1,7 @@
 import java.util.EnumSet
 
 const val PROJ_GROUP = "cb77.lang.plugins.kt.overloadablesetters"
-const val PROJ_VERSION = "1.0-SNAPSHOT"
+const val PROJ_VERSION = "1.0.0"
 
 const val MY_NEXUS_ID = "io.github.cbrandt77"
 

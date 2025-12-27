@@ -24,7 +24,7 @@ import org.jetbrains.kotlin.name.Name
 @OptIn(DirectDeclarationsAccess::class)
 class FirSetterAssignmentAlterer(session: FirSession) : FirAssignExpressionAltererExtension(session) {
 	/**
-	 * Only transforms class or extension properties that are mutable and annotated with [HasCustomSetters]
+	 * Only transforms class or extension properties that are mutable and annotated with `@HasCustomSetters`
 	 */
 	override fun transformVariableAssignment(variableAssignment: FirVariableAssignment): FirStatement? {
 		val lSymbol: FirPropertySymbol = (variableAssignment.calleeReference?.toResolvedVariableSymbol() as? FirPropertySymbol)

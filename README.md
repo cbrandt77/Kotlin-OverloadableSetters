@@ -99,7 +99,7 @@ This isn't unique to setters, and is a consideration when creating _any_ method.
 Add the following to your plugins block:
 ```kotlin
 plugins {
-  id("cb77.lang.plugins.kt.overloadablesetters")
+  id("io.github.cbrandt77.kt.overloadablesetters")
 }
 ```
 

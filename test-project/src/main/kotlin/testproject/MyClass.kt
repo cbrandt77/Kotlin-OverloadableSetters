@@ -3,7 +3,7 @@ package testproject
 import cb77.lang.plugins.kt.overloadablesetters.HasCustomSetters
 
 open class Parent {
-	
+	@HasCustomSetters
 	open var parentProp: Int = 4
 	
 	open fun `set-parentProp`(value: String) {

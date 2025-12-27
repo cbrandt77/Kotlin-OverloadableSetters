@@ -117,6 +117,10 @@ tasks.shadowJar {
     relocate("dev.zacsweers.metro", "${project.group}.shaded.dev.zacsweers.metro")
 }
 
+tasks.build {
+    dependsOn(tasks.test)
+}
+
 tasks.test {
     dependsOn(annotationsRuntimeClasspath)
 

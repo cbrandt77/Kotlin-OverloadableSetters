@@ -1,12 +1,12 @@
 package cb77.lang.plugins.kt.overloadablesetters.fir
 
 import cb77.lang.plugins.kt.overloadablesetters.util.makeSetterNameId
-import com.google.common.collect.ImmutableMap
+import it.unimi.dsi.fastutil.objects.Object2ObjectOpenHashMap
+import kotlinx.collections.immutable.toImmutableMap
 import org.jetbrains.kotlin.fir.FirSession
 import org.jetbrains.kotlin.fir.caches.FirCache
 import org.jetbrains.kotlin.fir.caches.firCachesFactory
 import org.jetbrains.kotlin.fir.caches.getValue
-import org.jetbrains.kotlin.fir.declarations.hasAnnotation
 import org.jetbrains.kotlin.fir.extensions.FirDeclarationPredicateRegistrar
 import org.jetbrains.kotlin.fir.extensions.FirExtensionSessionComponent
 import org.jetbrains.kotlin.fir.extensions.predicate.LookupPredicate
@@ -49,7 +49,7 @@ class FirSetterOverloadFinderService(pSession: FirSession, val propertyAnnotatio
 	 * Map of class ids to its properties that have custom setters, keyed by the name of the setter it would have
 	 */
 	private val _allAnnotatedProperties: FirCache<Unit, Map<ClassId, Map<Name, FirPropertySymbol>>, Nothing?> = session.firCachesFactory.createCache { _, _ ->
-		val settersByClass = mutableMapOf<ClassId, MutableMap<Name, FirPropertySymbol>>()
+		val settersByClass = HashMap<ClassId, MutableMap<Name, FirPropertySymbol>>()
 		
 		for (prop in session.predicateBasedProvider.getSymbolsByPredicate(pred_selfHasOverloadAnnotation)) {
 			if (prop !is FirPropertySymbol || prop.isLocal || !prop.isVar || prop.dispatchReceiverType == null)
@@ -57,19 +57,13 @@ class FirSetterOverloadFinderService(pSession: FirSession, val propertyAnnotatio
 			
 			val setterName = makeSetterNameId(prop.name)
 			val containingClassId = prop.dispatchReceiverType?.classId ?: continue;
-			settersByClass.computeIfAbsent(containingClassId) { mutableMapOf() }.put(setterName, prop)
+			settersByClass.computeIfAbsent(containingClassId) { HashMap() }.put(setterName, prop)
 		}
 		
-		settersByClass.toImmutableMap()
+		// TODO compress map of maps. Neither kotlinx.ImmutableMap nor guava.ImmutableMap work in prod - kotlinx actually doesn't compile in dev, and guava doesn't work in prod fsr
+		settersByClass
 	}
-	
-	private fun <K1, K2, V> Map<K1, Map<K2, V>>.toImmutableMap(): ImmutableMap<K1, ImmutableMap<K2, V>> {
-		val builder = ImmutableMap.builderWithExpectedSize<K1, ImmutableMap<K2, V>>(this.size)
-		for ((k, map) in this) {
-			builder.put(k, ImmutableMap.copyOf(map))
-		}
-		return builder.build()
-	}
+
 	
 	val allAnnotatedProperties: Map<ClassId, Map<Name, FirPropertySymbol>>
 		get() = _allAnnotatedProperties.getValue(Unit)
@@ -83,7 +77,6 @@ class FirSetterOverloadFinderService(pSession: FirSession, val propertyAnnotatio
 	 * True if the assignment alterer should remap any `inst.foo = bar` to `inst.set-foo(bar)`, false otherwise.
 	 */
 	fun shouldRemapPropertySets(symbol: FirPropertySymbol): Boolean {
-//		return symbol.hasOverloadedSetterAnnotation()
 		return session.predicateBasedProvider.matches(pred_shouldRemapPropertySets, symbol)
 	}
 	
@@ -91,7 +84,6 @@ class FirSetterOverloadFinderService(pSession: FirSession, val propertyAnnotatio
 	 * True if `symbol` is decorated with whatever annotation means it supports overloaded setters provided for it, false otherwise.
 	 */
 	fun propertyDeclarationSupportsOverloads(symbol: FirPropertySymbol): Boolean {
-//		return symbol.hasOverloadedSetterAnnotation()
 		return session.predicateBasedProvider.matches(pred_selfHasOverloadAnnotation, symbol)
 	}
 }

@@ -1,6 +1,6 @@
 package org.jetbrains.kotlin.compiler.plugin.template.services
 
-import cb77.lang.plugins.kt.overloadablesetters.fir.FirRegistrar_OverloadableSetters
+import io.github.cbrandt77.kt.overloadablesetters.fir.FirRegistrar_OverloadableSetters
 import org.jetbrains.kotlin.compiler.plugin.CompilerPluginRegistrar
 import org.jetbrains.kotlin.config.CompilerConfiguration
 import org.jetbrains.kotlin.fir.extensions.FirExtensionRegistrarAdapter

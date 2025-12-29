@@ -5,6 +5,7 @@
     junit = "4.13.2"
     nexus-publish = "2.0.0"
     gradle-plugin-publish = "2.0.0"
+    mavenPublish-vanniktech = "0.35.0"
 
 [libraries]
     junit = { module = "junit:junit", version.ref = "junit" }
@@ -34,5 +35,6 @@
     build-config = { id = "com.github.gmazzo.buildconfig" }
     binary-compatibility-validator = { id = "org.jetbrains.kotlinx.binary-compatibility-validator", version.ref = "bcv" }
     gradle-plugin-publish = { id = "com.gradle.plugin-publish", version.ref = "gradle-plugin-publish" }
+    mavenPublish-vanniktech = { id = "com.vanniktech.maven.publish" }
 
     shadow = { id = "com.gradleup.shadow", version = "9.2.2" }

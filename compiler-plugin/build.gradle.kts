@@ -1,5 +1,3 @@
-import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
-
 plugins {
     id("kotlin-jvm-convention")
     `java-test-fixtures`
@@ -8,24 +6,6 @@ plugins {
     idea
     id("module.publication")
 }
-
-//val shadowJar =
-//    tasks.register<ShadowJar>("shadowJar") {
-//        from(java.sourceSets.main.map { it.output })
-//        configurations.add(embeddedClasspath)
-//
-//        dependencies {
-//            exclude(dependency("org.jetbrains:.*"))
-//            exclude(dependency("org.intellij:.*"))
-//            exclude(dependency("org.jetbrains.kotlin:.*"))
-//            exclude(dependency("dev.drewhamilton.poko:.*"))
-//        }
-//
-//        duplicatesStrategy = DuplicatesStrategy.INCLUDE
-//        mergeServiceFiles()
-//
-//        relocate("dev.zacsweers.metro", "cb77.lang.plugins.kt.overloadedsetters.shaded.dev.zacsweers.metro")
-//    }
 
 sourceSets {
     main {
@@ -214,11 +194,11 @@ plugins.withId("org.gradle.java-test-fixtures") {
 }
 
 
-publishing {
-    publications {
-        create<MavenPublication>("maven") {
-            artifactId = "compiler-plugin"
-            from(components["java"])
-        }
-    }
-}
+//publishing {
+//    publications {
+//        create<MavenPublication>("maven") {
+//            artifactId = "compiler-plugin"
+//            from(components["java"])
+//        }
+//    }
+//}

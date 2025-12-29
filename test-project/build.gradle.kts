@@ -2,7 +2,7 @@ import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
 	kotlin("jvm") version libs.versions.kotlin
-	id("cb77.lang.plugins.kt.overloadablesetters") version "1.0-SNAPSHOT"
+//	id("io.github.cbrandt77.kt.overloadablesetters") version "1.0-SNAPSHOT"
 }
 
 repositories {

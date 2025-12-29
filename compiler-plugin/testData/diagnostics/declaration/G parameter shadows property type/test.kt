@@ -23,6 +23,6 @@ class MyClass {
 	var someOtherProperty: Int = 0
 }
 
-fun MyClass.`set-someOtherProperty`(value: <!SETTER_DECL_PARAMETER_SHADOWS_PROPERTY_TYPE!>Int<!>) {
+fun MyClass.<!EXTENSION_SHADOWED_BY_MEMBER!>`set-someOtherProperty`<!>(value: <!SETTER_DECL_PARAMETER_SHADOWS_PROPERTY_TYPE!>Int<!>) {
 	someOtherProperty = value
 }

@@ -1,5 +1,5 @@
 plugins {
-    id("root.publication")
+//    id("root.publication")
     alias(libs.plugins.kotlin.multiplatform) apply false
     alias(libs.plugins.kotlin.jvm) apply false
     alias(libs.plugins.build.config)
@@ -21,11 +21,11 @@ tasks.register("publishToMavenLocal") {
 }
 
 
-tasks.register("publish") {
+tasks.register("publishToCentral") {
     group = "custom"
     dependsOn(project(":gradle-plugin").tasks["publishPlugins"])
     arrayOf(project(":compiler-plugin"), project(":plugin-annotations")).forEach {
-        dependsOn(it.tasks["publish"])
+        dependsOn(it.tasks["publishToSonatype"])
     }
     
 }

@@ -1,11 +1,26 @@
+import java.time.Duration
+
 plugins {
 	id("io.github.gradle-nexus.publish-plugin")
 }
 
-allprojects {
-	group = PROJ_GROUP
-	version = PROJ_VERSION
+fun getPropertyOrEnv(prop: String, env: String): String {
+	return project.properties[prop] as String
 }
+
+//nexusPublishing {
+//	repositories {
+//		sonatype {
+//			stagingProfileId = getPropertyOrEnv(prop = "sonatypeStagingProfileId", env = "SONATYPE_STAGING_PROFILE_ID")
+//			username = getPropertyOrEnv(prop = "sonatypeUsername", env = "SONATYPE_USERNAME")
+//			password = getPropertyOrEnv(prop = "sonatypePassword", env = "SONATYPE_PASSWORD")
+//		}
+//	}
+//	transitionCheckOptions {
+//		maxRetries.set(100)
+//		delayBetween.set(Duration.ofSeconds(5))
+//	}
+//}
 
 nexusPublishing {
 	repositories {

@@ -1,6 +1,6 @@
 package testproject.otherpackage.foo
 
-import cb77.lang.plugins.kt.overloadablesetters.HasCustomSetters
+import io.github.cbrandt77.kt.overloadablesetters.HasCustomSetters
 
 abstract class SuperClass {
 	@HasCustomSetters

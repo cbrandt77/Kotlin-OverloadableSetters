@@ -1,29 +1,34 @@
 import java.util.EnumSet
 
-const val PROJ_GROUP = "cb77.lang.plugins.kt.overloadablesetters"
+const val PROJ_GROUP = "io.github.cbrandt77.kt.overloadablesetters"
 const val PROJ_VERSION = "1.0.0"
 
 const val MY_NEXUS_ID = "io.github.cbrandt77"
 
 const val JAVA_VERSION = 21
 
-object MyMetaInfo {
-	const val plugin_id = "io.github.cbrandt77.kt.overloadablesetters"
-}
-
 object MyPublishingInfo {
+	const val plugin_id = "io.github.cbrandt77.kt.overloadablesetters"
+	
 	const val name = "OverloadableSetters"
 	
 	const val description = "Give properties multiple setters! Define multiple ways to set a field, and invoke them with standard property syntax."
 	
-	const val vcsurl = "https://github.com/cbrandt77/Kotlin-OverloadableSetters"
+	private const val _vcsurl_noHttps = "github.com/cbrandt77/Kotlin-OverloadableSetters"
+	
+	const val vcsurl = "https://${_vcsurl_noHttps}"
 	const val url = vcsurl
+	
+	const val scmurl = "scm:git:git://${_vcsurl_noHttps}.git"
+	const val scmurl_dev = "scm:git:ssh://git@${_vcsurl_noHttps}.git"
 	
 	const val license_name = "GNU General Public License (Version 3)"
 	const val license_url = "https://www.gnu.org/licenses/gpl-3.0.en.html"
 	
+	data class DevInfo(val id: String, val name: String, val email: String = "", val organization: String = "", val orgUrl: String = "")
+	
 	val developers = listOf(
-			"cbrandt77" to "Caleb Brandt"
+			DevInfo("cbrandt77", "Caleb Brandt")
 	)
 }
 

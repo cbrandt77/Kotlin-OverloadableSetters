@@ -2,12 +2,13 @@ import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
 	kotlin("jvm") version libs.versions.kotlin
-//	id("io.github.cbrandt77.kt.overloadablesetters") version "1.0-SNAPSHOT"
+//	id("io.github.cbrandt77.kt.overloadablesetters") version "1.0.0"
 }
 
 repositories {
+	gradlePluginPortal()
 	mavenCentral()
-	mavenLocal()
+//	mavenLocal()
 }
 
 java {

@@ -11,6 +11,10 @@ plugins {
 }
 
 mavenPublishing {
+	publishToMavenCentral()
+	
+	signAllPublications()
+	
 	coordinates(PROJ_GROUP, project.name, PROJ_VERSION)
 	
 	pom {

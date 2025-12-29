@@ -1,37 +1,47 @@
 package testproject
 
-import io.github.cbrandt77.kt.overloadablesetters.HasCustomSetters
+//import io.github.cbrandt77.kt.overloadablesetters.HasCustomSetters
+//
+//open class Parent {
+//	@HasCustomSetters
+//	open var parentProp: Int = 4
+//}
+//
+//class Child : Parent() {
+//	override var parentProp: Int = 0
+//		get() = 5
+//}
+//
+//fun Child.`set-parentProp`(value: Boolean) {
+//	this.parentProp = if (value) 1 else 0
+//}
+//
+//class SetterTester {
+//	@HasCustomSetters
+//	var foo: String = ""
+//
+//	fun x() {
+//
+//	}
+//}
+//
 
-open class Parent {
-	@HasCustomSetters
-	open var parentProp: Int = 4
-}
+//
+//fun SetterTester.`set-foo`(value: Int) {
+//	this.foo = value.toString()
+//}
+//
+//fun foo() {
+//	val x = SetterTester()
+//	x.`set-foo`("")
+//	x.foo = 4
+//}
 
-class Child : Parent() {
-	override var parentProp: Int = 0
-		get() = 5
-}
-
-fun Child.`set-parentProp`(value: Boolean) {
-	this.parentProp = if (value) 1 else 0
-}
-
-class SetterTester {
-	@HasCustomSetters
-	var foo: String = ""
+class BarBar {
+//	var foo = ""
+//	var Foo = ""
 	
-	fun x() {
-	
-	}
-}
-
-fun SetterTester.`set-foo`(value: Int) {
-	this.foo = value.toString()
-}
-
-fun foo() {
-	val x = SetterTester()
-	x.`set-foo`("")
+	var 多变的 = ""
 }
 
 fun main() {

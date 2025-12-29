@@ -59,7 +59,7 @@ package io.github.cbrandt77.kt.overloadablesetters
  * ```
  *
  * Note that setter methods MUST:
- * 1. Be named `set-<propertyName>`
+ * 1. Be named `set-<propertyName>` (this may change in the future)
  * 2. Have a single parameter, with no context or type parameters
  * 3. Have no return type (i.e. return `Unit`)
  * 4. **Accept a _different type_ than the original property's setter** (i.e. must not shadow the vanilla property setter)

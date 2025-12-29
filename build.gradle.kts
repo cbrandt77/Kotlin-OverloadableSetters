@@ -21,11 +21,11 @@ tasks.register("publishToMavenLocal") {
 }
 
 
-tasks.register("publishToCentral") {
+tasks.register("publishForRelease") {
     group = "custom"
     dependsOn(project(":gradle-plugin").tasks["publishPlugins"])
     arrayOf(project(":compiler-plugin"), project(":plugin-annotations")).forEach {
-        dependsOn(it.tasks["publishToSonatype"])
+        dependsOn(it.tasks["publishAndReleaseToMavenCentral"])
     }
     
 }
